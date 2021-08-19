@@ -1,38 +1,42 @@
-NAME		= minishell
-CC			= gcc
-RM			= rm -f
-DEBUG		= 0
+NAME			= minishell
+CC				= gcc
+RM				= rm -f
+MKDIR			= mkdir -p
+DEBUG			= 0
 ifeq ($(DEBUG), 1)
 	DEBUG_FLAGS	= -fsanitize=address -g
 endif
-CFLAGS		= -Wall -Wextra -Werror -MMD $(DEBUG_FLAGS)
-CPPFLAGS	= $(CFLAGS) -march=native -O2 -msse4a -flto -pipe
-HEADERS		= include/
+COMMON_FLAGS	= -Wall -Wextra -Werror -MMD
+CFLAGS			= $(COMMON_FLAGS) $(DEBUG_FLAGS) -march=native -O2 -msse4a -flto -pipe
 
-SRCS =	src/main.c\
+BIN_DIR			= ./
+BUILD_DIR		= build/
+HEADERS			= include/
 
-OBJS = $(SRCS:.c=.o)
+SRCS				= srcs/main.c\
 
-$(NAME):		$(OBJS)
-				$(CC) $(CPPFLAGS) -I $(HEADERS) $(OBJS) -o $(NAME)
+OBJS			= $(notdir $(SRCS))
+OBJS			:= $(OBJS:%.c=$(BUILD_DIR)%.o)
+DEPS			= $(OBJS:.o=.d)
+NAME 			:= $(addprefix $(BIN_DIR), $(NAME))
 
 all:			$(NAME)
 
-.c.o:
-				$(CC) $(CPPFLAGS) -I $(HEADERS) -o $@ -c $<
+$(NAME):		$(OBJS)
+				$(CC) $(CFLAGS) -I $(HEADERS) $(OBJS) -o $(NAME)
 
-$(OBJS):		$(HEADERS)
+$(OBJS):		$(SRCS)
+				$(MKDIR) $(dir $@)
+				$(CC) $(CFLAGS) -I $(HEADERS) -c $< -o $@
 
 clean:
 				$(RM) $(OBJS)
-				$(RM) $(OBJS:.o=.d)
+				$(RM) $(DEPS)
 
 fclean:			clean
 				$(RM) $(NAME)
 
 re:				fclean all
 
-re_rt:			clean all
-
-.PHONY:			all clean fclean re re_rt
-.SILENT:
+-include		$(DEPS)
+.PHONY:			all, clean, fclean, re

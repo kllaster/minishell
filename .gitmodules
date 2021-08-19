@@ -1,0 +1,6 @@
+[submodule "import/get_next_line"]
+	path = import/get_next_line
+	url = https://github.com/Kllaster/get_next_line.git
+[submodule "import/libft"]
+	path = import/libft
+	url = https://github.com/Kllaster/libft.git
