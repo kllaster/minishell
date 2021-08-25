@@ -1,0 +1,21 @@
+name: make
+
+on:
+  push:
+    paths:
+      - '**.c'
+      - '**.h'
+    branches: [ master ]
+  pull_request:
+    paths:
+      - '**.c'
+      - '**.h'
+    branches: [ master ]
+
+jobs:
+  linter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run Makefile
+        run: make all
