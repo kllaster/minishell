@@ -5,35 +5,52 @@ MKDIR			= mkdir -p
 DEBUG			= 0
 ifeq ($(DEBUG), 1)
 	DEBUG_FLAGS	= -fsanitize=address -g
+else
+	DEBUG_FLAGS = -march=native -O2 -flto -msse4a -D_FORTIFY_SOURCE=2 -fpie
 endif
-COMMON_FLAGS	= -Wall -Wextra -Werror -MMD
-CFLAGS			= $(COMMON_FLAGS) $(DEBUG_FLAGS) -march=native -O2 -msse4a -flto -pipe
+PROTECT_FLAGS	= -fno-exceptions -fcf-protection=full -fstack-protector-all
+COMMON_FLAGS	= -std=c99 -Wall -Wextra -Werror -Wfloat-equal -MMD -pipe
+CFLAGS			= $(COMMON_FLAGS) $(DEBUG_FLAGS) $(PROTECT_FLAGS)
 
 BIN_DIR			= ./
-BUILD_DIR		= build/
-HEADERS			= include/
+SRC_DIR			= srcs
+BUILD_DIR		= build
+INC_DIR			= include
 
-SRCS				= srcs/main.c\
+LIBS			=	import/get_next_line/bin/get_next_line.a\
+					import/libft/bin/libft.a\
+					-ltermcap\
+
+SRCS			= $(shell find $(SRC_DIR) -name *.c)
 
 OBJS			= $(notdir $(SRCS))
-OBJS			:= $(OBJS:%.c=$(BUILD_DIR)%.o)
+OBJS			:= $(subst $(SRC_DIR), $(BUILD_DIR), $(SRCS:%.c=%.o))
+NAME			:= $(addprefix $(BIN_DIR), $(NAME))
 DEPS			= $(OBJS:.o=.d)
-NAME 			:= $(addprefix $(BIN_DIR), $(NAME))
+VPATH			= $(SRC_DIR):$(INC_DIR):$(BUILD_DIR)
 
 all:			$(NAME)
 
-$(NAME):		$(OBJS)
-				$(CC) $(CFLAGS) -I $(HEADERS) $(OBJS) -o $(NAME)
+$(NAME):		$(OBJS) $(LIBS)
+				$(CC) $(CFLAGS) -I $(INC_DIR) $(OBJS) $(LIBS) -o $(NAME)
 
-$(OBJS):		$(SRCS)
+$(BUILD_DIR)/%.o: %.c
 				$(MKDIR) $(dir $@)
-				$(CC) $(CFLAGS) -I $(HEADERS) -c $< -o $@
+				$(CC) $(CFLAGS) -I $(INC_DIR) -c $< -o $@
+
+$(LIBS):
+				cd import/get_next_line && $(MAKE)
+				cd import/libft && $(MAKE)
 
 clean:
+				cd import/get_next_line && $(MAKE) clean
+				cd import/libft && $(MAKE) clean
+
+fclean:
 				$(RM) $(OBJS)
 				$(RM) $(DEPS)
-
-fclean:			clean
+				cd import/get_next_line && $(MAKE) fclean
+				cd import/libft && $(MAKE) fclean
 				$(RM) $(NAME)
 
 re:				fclean all
