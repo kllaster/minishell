@@ -5,11 +5,13 @@ on:
     paths:
       - '**.c'
       - '**.h'
+      - 'Makefile'
     branches: [ master, parser, builtin ]
   pull_request:
     paths:
       - '**.c'
       - '**.h'
+      - 'Makefile'
     branches: [ master, parser, builtin ]
 
 jobs:
