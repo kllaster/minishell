@@ -17,11 +17,14 @@ SRC_DIR			= srcs
 BUILD_DIR		= build
 INC_DIR			= include
 
-LIBS			=	import/get_next_line/bin/get_next_line.a\
-					import/libft/bin/libft.a\
-					-ltermcap\
+GNL_DIR			= import/get_next_line
+GNL				= ${GNL_DIR}/bin/get_next_line.a
+LIBFT_DIR		= import/libft
+LIBFT			= ${LIBFT_DIR}/bin/libft.a
 
-SRCS			= $(shell find $(SRC_DIR) -name *.c)
+LIBS			= ${LIBFT} ${GNL} -ltermcap
+
+SRCS			= $(shell find $(SRC_DIR) -name "*.c")
 
 OBJS			= $(notdir $(SRCS))
 OBJS			:= $(subst $(SRC_DIR), $(BUILD_DIR), $(SRCS:%.c=%.o))
@@ -31,16 +34,18 @@ VPATH			= $(SRC_DIR):$(INC_DIR):$(BUILD_DIR)
 
 all:			$(NAME)
 
-$(NAME):		$(OBJS) $(LIBS)
+$(NAME):		$(OBJS) $(LIBFT) $(GNL)
 				$(CC) $(CFLAGS) -I $(INC_DIR) $(OBJS) $(LIBS) -o $(NAME)
 
 $(BUILD_DIR)/%.o: %.c
 				$(MKDIR) $(dir $@)
 				$(CC) $(CFLAGS) -I $(INC_DIR) -c $< -o $@
 
-$(LIBS):
-				cd import/get_next_line && $(MAKE)
-				cd import/libft && $(MAKE)
+${GNL}:
+				${MAKE} -C ${GNL_DIR}
+
+${LIBFT}:
+				${MAKE} -C ${LIBFT_DIR}
 
 clean:
 				cd import/get_next_line && $(MAKE) clean

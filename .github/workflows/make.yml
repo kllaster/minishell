@@ -5,17 +5,25 @@ on:
     paths:
       - '**.c'
       - '**.h'
-    branches: [ master ]
+    branches: [ master, parser, builtin ]
   pull_request:
     paths:
       - '**.c'
       - '**.h'
-    branches: [ master ]
+    branches: [ master, parser, builtin ]
 
 jobs:
   linter:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Run Makefile
+      - name: git submodule
+        run: git submodule update --init
+      - name: all
         run: make all
+      - name: clean
+        run: make clean
+      - name: re
+        run: make re
+      - name: fclean
+        run: make fclean
