@@ -5,11 +5,13 @@ on:
     paths:
       - '**.c'
       - '**.h'
+      - '**.yml'
     branches: [ master, parser, builtin ]
   pull_request:
     paths:
       - '**.c'
       - '**.h'
+      - '**.yml'
     branches: [ master, parser, builtin ]
 
 jobs:
@@ -28,5 +30,7 @@ jobs:
         run: python3 -m pip install norminette
       - name: Run norminette
         run: |
-          echo "ERRORS=$(norminette | grep -E 'Error|Warning|KO!')" >> $GITHUB_ENV
+          echo 'ERRORS<<EOF' >> $GITHUB_ENV
+          norminette | grep -E 'Error|Warning|KO!' >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
           [[ -z "${ERRORS}" ]]
