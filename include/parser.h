@@ -5,24 +5,27 @@
 
 enum e_operators
 {
-	S_QUOTE = '\'',
+	ARG		= '$',
+	SPACE	= ' ',
+	S_QUOTE	= '\'',
 	D_QUOTE = '"',
 	L_REDIR = '<',
 	R_REDIR = '>',
 	DL_REDIR,
 	DR_REDIR,
-	PIPE = '|'
+	PIPE	= '|'
 };
 
-enum e_operands
+typedef struct s_cmd
 {
-	T_PROG,
-	T_FILE,
-	T_FD,
-	T_ARG
-};
+	pid_t			pid;
+	int				fd[2];
+	int				error;
+	char			*exec_file;
+	char			**cmd;
+}				t_cmd;
 
-void	parse_line_tokens(char *line);
+t_dlst	*parse_line_lexem(char *line);
 
 char	*get_env(char *key);
 

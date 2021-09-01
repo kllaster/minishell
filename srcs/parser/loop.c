@@ -1,5 +1,16 @@
 #include "minishell.h"
 
+void	run_line(char *line)
+{
+	t_dlst	*s_lexems;
+
+	s_lexems = parse_line_lexem(line);
+	dlst_end(&s_lexems);
+	ft_putstr_fd("Lexems: \n", 2);
+	dlst_map(s_lexems, ms_print_lexem);
+	dlst_map(s_lexems, free);
+}
+
 int	check_duplicate_char(char *line, char c)
 {
 	int		i;
@@ -17,24 +28,19 @@ int	check_duplicate_char(char *line, char c)
 
 int	check_syntax(char *line)
 {
-	char	*msg;
-
-	msg = NULL;
 	if (ft_strnstr(line, "|", 1) != 0)
 	{
-		msg = ft_strdup("syntax error near unexpected token '|'");
-		ms_print(STDERR_FILENO, COLOR_RED, msg);
-		free(msg);
+		ms_print(STDERR_FILENO, COLOR_RED,
+			"syntax error near unexpected token '|'");
+		return (1);
 	}
 	else if (ft_strnstr(line, ";", 1) != 0)
 	{
-		msg = ft_strdup("syntax error near unexpected token ';'");
-		ms_print(STDERR_FILENO, COLOR_RED, msg);
-		free(msg);
+		ms_print(STDERR_FILENO, COLOR_RED,
+			"syntax error near unexpected token ';'");
+		return (1);
 	}
 	else if (check_duplicate_char(line, ' '))
-		msg = "0";
-	if (msg != NULL)
 		return (1);
 	return (0);
 }
@@ -52,14 +58,23 @@ void	ms_put_tag(void)
 
 void	loop(void)
 {
+	int		i;
 	char	*line;
+	char	**cmds;
 
 	line = NULL;
 	ms_put_tag();
 	while (get_next_line(0, &line) > 0)
 	{
 		if (check_syntax(line) == 0)
-			parse_line_tokens(line);
+		{
+			cmds = ft_split(line, ';');
+			i = -1;
+			while (cmds[++i])
+				run_line(cmds[i]);
+			kl_free_arr(cmds);
+			ft_putchar_fd('\n', STDOUT_FILENO);
+		}
 		ms_put_tag();
 		free(line);
 	}
