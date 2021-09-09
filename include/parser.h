@@ -3,7 +3,7 @@
 
 # include "minishell.h"
 
-enum e_operators
+typedef enum e_operators
 {
 	ARG		= '$',
 	SPACE	= ' ',
@@ -13,8 +13,16 @@ enum e_operators
 	R_REDIR = '>',
 	DL_REDIR,
 	DR_REDIR,
-	PIPE	= '|'
-};
+	PIPE	= '|',
+	STR
+}			t_operator;
+
+typedef struct s_lexeme
+{
+	t_operator	type;
+	char		*str;
+	void		(*validate)();
+}				t_lexeme;
 
 typedef struct s_cmd
 {
@@ -25,8 +33,12 @@ typedef struct s_cmd
 	char			**cmd;
 }				t_cmd;
 
-t_dlst	*parse_line_lexem(char *line);
+void		valid__str(t_lexeme *lexeme, t_dlst *dlts_item);
+t_dlst		*validation_lexemes(t_dlst *dlst_lexemes);
+t_dlst		*parse_lexem(char *line);
 
-char	*get_env(char *key);
+t_lexeme	*new_lexeme(t_operator type, char *str, void (*validate)());
 
-#endif //PARSER_H
+char		*get_env(char *key);
+
+#endif

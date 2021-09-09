@@ -2,16 +2,17 @@
 
 void	run_line(char *line)
 {
-	t_dlst	*s_lexems;
+	t_dlst	*dlst_lexemes;
 
-	s_lexems = parse_line_lexem(line);
-	dlst_end(&s_lexems);
-	ft_putstr_fd("Lexems: \n", 2);
-	dlst_map(s_lexems, ms_print_lexem);
-	dlst_map(s_lexems, free);
+	dlst_lexemes = parse_lexem(line);
+	dlst_lexemes = validation_lexemes(dlst_lexemes);
+	ft_putstr_fd("lexemes valid: \n", 2);
+	ms_print_lexem(dlst_lexemes);
+	dlst_loop(&dlst_lexemes);
+	dlst_map(dlst_lexemes, free);
 }
 
-int	check_duplicate_char(char *line, char c)
+int	check_duplicate_char(const char *line, char c)
 {
 	int		i;
 
@@ -43,17 +44,6 @@ int	check_syntax(char *line)
 	else if (check_duplicate_char(line, ' '))
 		return (1);
 	return (0);
-}
-
-void	ms_put_tag(void)
-{
-	ft_putstr_fd(COLOR_RED_B, STDERR_FILENO);
-	ft_putstr_fd("➜ ", STDERR_FILENO);
-	ft_putstr_fd(COLOR_CYAN_B, STDERR_FILENO);
-	ft_putstr_fd("minishell ", STDERR_FILENO);
-	ft_putstr_fd(COLOR_YELLOW_B, STDERR_FILENO);
-	ft_putstr_fd("✗ ", STDERR_FILENO);
-	ft_putstr_fd(COLOR_RESET, STDERR_FILENO);
 }
 
 void	loop(void)
