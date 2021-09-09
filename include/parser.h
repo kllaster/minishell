@@ -22,4 +22,4 @@ enum e_operands
 	ARG
 };
 
-#endif //PARSER_H
+#endif
