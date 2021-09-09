@@ -3,23 +3,42 @@
 
 # include "minishell.h"
 
-enum e_operators
+typedef enum e_operators
 {
-	S_QUOTE,
-	D_QUOTE,
-	L_REDIR,
-	R_REDIR,
+	ARG		= '$',
+	SPACE	= ' ',
+	S_QUOTE	= '\'',
+	D_QUOTE = '"',
+	L_REDIR = '<',
+	R_REDIR = '>',
 	DL_REDIR,
 	DR_REDIR,
-	PIPE
-};
+	PIPE	= '|',
+	STR
+}			t_operator;
 
-enum e_operands
+typedef struct s_lexeme
 {
-	PROG,
-	FILE,
-	FD,
-	ARG
-};
+	t_operator	type;
+	char		*str;
+	void		(*validate)();
+}				t_lexeme;
 
-#endif //PARSER_H
+typedef struct s_cmd
+{
+	pid_t			pid;
+	int				fd[2];
+	int				error;
+	char			*exec_file;
+	char			**cmd;
+}				t_cmd;
+
+void		valid__str(t_lexeme *lexeme, t_dlst *dlts_item);
+t_dlst		*validation_lexemes(t_dlst *dlst_lexemes);
+t_dlst		*parse_lexem(char *line);
+
+t_lexeme	*new_lexeme(t_operator type, char *str, void (*validate)());
+
+char		*get_env(char *key);
+
+#endif
