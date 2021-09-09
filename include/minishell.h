@@ -2,7 +2,13 @@
 # define MINISHELL_H
 
 # include "libft.h"
+# include "get_next_line.h"
 # include "utils.h"
+# include "parser.h"
 # include "builtin.h"
 
-#endif //MINISHELL_H
+char	**g_envp;
+
+void	loop(void);
+
+#endif

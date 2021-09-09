@@ -2,7 +2,7 @@ NAME			= minishell
 CC				= gcc
 RM				= rm -f
 MKDIR			= mkdir -p
-DEBUG			= 0
+DEBUG			= 1
 ifeq ($(DEBUG), 1)
 	DEBUG_FLAGS	= -fsanitize=address -g
 else
@@ -48,6 +48,8 @@ ${LIBFT}:
 				${MAKE} -C ${LIBFT_DIR}
 
 clean:
+				$(RM) $(OBJS)
+				$(RM) $(DEPS)
 				cd import/get_next_line && $(MAKE) clean
 				cd import/libft && $(MAKE) clean
 
