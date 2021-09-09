@@ -2,14 +2,14 @@
 
 void	run_line(char *line)
 {
-	t_dlst	*dlst_lexemes;
+	t_dlst	*lexemes;
 
-	dlst_lexemes = parse_lexem(line);
-	dlst_lexemes = validation_lexemes(dlst_lexemes);
+	lexemes = parse_lexem(line);
+	lexemes = validation_lexemes(lexemes);
 	ft_putstr_fd("lexemes valid: \n", 2);
-	ms_print_lexem(dlst_lexemes);
-	dlst_loop(&dlst_lexemes);
-	dlst_map(dlst_lexemes, free);
+	ms_print_lexem(lexemes);
+	dlst_loop(&lexemes);
+	dlst_map(lexemes, free);
 }
 
 int	check_duplicate_char(const char *line, char c)
