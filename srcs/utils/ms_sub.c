@@ -17,7 +17,10 @@ void	ms_print_lexem(t_dlst *dlst_item)
 	{
 		lexeme = dlst_item->content;
 		ft_putstr_fd("---> ", STDOUT_FILENO);
-		ft_putstr_fd(lexeme->str, STDOUT_FILENO);
+		if (lexeme->str)
+			ft_putstr_fd(lexeme->str, STDOUT_FILENO);
+		else
+			ft_putchar_fd(lexeme->type, STDOUT_FILENO);
 		ft_putchar_fd('\n', STDOUT_FILENO);
 		dlst_item = dlst_item->prev;
 	}

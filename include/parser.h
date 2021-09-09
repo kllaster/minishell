@@ -7,6 +7,7 @@ typedef enum e_operators
 {
 	ARG		= '$',
 	SPACE	= ' ',
+	TAB		= '\t',
 	S_QUOTE	= '\'',
 	D_QUOTE = '"',
 	L_REDIR = '<',
@@ -35,6 +36,12 @@ typedef struct s_cmd
 
 void		valid__str(t_lexeme *lexeme, t_dlst *dlts_item);
 t_dlst		*validation_lexemes(t_dlst *dlst_lexemes);
+
+int			parse__str(t_dlst **lexemes, const char *line, int i);
+int			parse__spaces(t_dlst **lexemes, const char *line, int i);
+int			parse__operator(t_dlst **lexemes, int i, t_operator type);
+int			parse__quote(t_dlst **lexemes, const char *line,
+				int i, t_operator type);
 t_dlst		*parse_lexem(char *line);
 
 t_lexeme	*new_lexeme(t_operator type, char *str, void (*validate)());
