@@ -21,7 +21,7 @@ int	parse_lexem_other(t_dlst **lexemes, const char *line, int i)
 	return (i);
 }
 
-t_dlst	*parse_lexem(char *line)
+t_dlst	*parse_lexeme(char *line)
 {
 	int		i;
 	t_dlst	*lexemes;

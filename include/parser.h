@@ -22,7 +22,6 @@ typedef struct s_lexeme
 {
 	t_operator	type;
 	char		*str;
-	void		(*validate)();
 }				t_lexeme;
 
 typedef struct s_cmd
@@ -34,17 +33,17 @@ typedef struct s_cmd
 	char			**cmd;
 }				t_cmd;
 
-void		valid__str(t_lexeme *lexeme, t_dlst *dlts_item);
-t_dlst		*validation_lexemes(t_dlst *dlst_lexemes);
+void		join_lexeme_str(t_lexeme *lexeme, t_dlst *dlts_item);
 
 int			parse__str(t_dlst **lexemes, const char *line, int i);
 int			parse__spaces(t_dlst **lexemes, const char *line, int i);
 int			parse__operator(t_dlst **lexemes, int i, t_operator type);
 int			parse__quote(t_dlst **lexemes, const char *line,
 				int i, t_operator type);
-t_dlst		*parse_lexem(char *line);
+t_dlst		*parse_lexeme(char *line);
 
-t_lexeme	*new_lexeme(t_operator type, char *str, void (*validate)());
+t_lexeme	*new_lexeme(t_operator type, char *str);
+void		free_lexeme(void *lexeme);
 
 char		*get_env(char *key);
 

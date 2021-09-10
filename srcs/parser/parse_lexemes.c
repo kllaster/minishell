@@ -2,9 +2,17 @@
 
 int	parse__operator(t_dlst **lexemes, int i, t_operator type)
 {
+	t_dlst		*temp;
 	t_lexeme	*lexeme;
 
-	lexeme = new_lexeme(type, NULL, NULL);
+	if (((t_lexeme *)(*lexemes)->content)->type == SPACE)
+	{
+		temp = (*lexemes)->next;
+		free_lexeme((*lexemes)->content);
+		dlst_remove_node(*lexemes);
+		*lexemes = temp;
+	}
+	lexeme = new_lexeme(type, NULL);
 	dlst_add_front(lexemes, dlst_new(lexeme));
 	return (i);
 }
@@ -12,7 +20,9 @@ int	parse__operator(t_dlst **lexemes, int i, t_operator type)
 int	parse__spaces(t_dlst **lexemes, const char *line, int i)
 {
 	t_lexeme	*lexeme;
+	t_operator	type;
 
+	type = 0;
 	lexeme = NULL;
 	while (line[++i])
 	{
@@ -20,13 +30,15 @@ int	parse__spaces(t_dlst **lexemes, const char *line, int i)
 			break ;
 	}
 	if (*lexemes != NULL)
+		type = ((t_lexeme *)(*lexemes)->content)->type;
+	if (line[i] && type != 0 && type != PIPE
+		&& type != R_REDIR && type != DR_REDIR
+		&& type != L_REDIR && type != DL_REDIR)
 	{
-		lexeme = new_lexeme(SPACE, ft_strdup(" "), NULL);
+		lexeme = new_lexeme(SPACE, NULL);
 		dlst_add_front(lexemes, dlst_new(lexeme));
 	}
-	if (line[i])
-		return (i - 1);
-	return (i - 2);
+	return (i - 1);
 }
 
 int	parse__str(t_dlst **lexemes, const char *line, int i)
@@ -43,9 +55,10 @@ int	parse__str(t_dlst **lexemes, const char *line, int i)
 			|| line[i] == L_REDIR || line[i] == R_REDIR)
 			break ;
 	}
-	str = kl_strdup_len(&line[start], i - start);
-	lexeme = new_lexeme(STR, str, valid__str);
+	str = kl_strdup_len(&line[start], (i - start));
+	lexeme = new_lexeme(STR, str);
 	dlst_add_front(lexemes, dlst_new(lexeme));
+	join_lexeme_str((*lexemes)->content, *lexemes);
 	return (i - 1);
 }
 
@@ -62,8 +75,10 @@ int	parse__quote(t_dlst **lexemes, const char *line, int i, t_operator type)
 	}
 	if (line[i])
 	{
-		lexeme = new_lexeme(type, kl_strdup_len(&line[start], i - start), NULL);
+		lexeme = new_lexeme(type, kl_strdup_len(&line[start], i - start));
 		dlst_add_front(lexemes, dlst_new(lexeme));
+		if (type == S_QUOTE)
+			join_lexeme_str((*lexemes)->content, *lexemes);
 		return (i);
 	}
 	return (i - 1);
