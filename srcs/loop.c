@@ -2,20 +2,20 @@
 
 void	run_line(char *line)
 {
-	t_dlst	*lexemes;
+	t_dlst	*tokens;
 
-	lexemes = parse_lexeme(line);
-	if (lexemes == NULL)
+	tokens = parse_tokens(line);
+	if (tokens == NULL)
 		return ;
-	lexemes = loop_vars(lexemes);
-	if (lexemes == NULL)
+	tokens = loop_vars(tokens);
+	if (tokens == NULL)
 		return ;
-	ft_putstr_fd("lexemes valid: \n", STDOUT_FILENO);
-	ms_print_lexemes(lexemes);
+	ft_putstr_fd("tokens valid: \n", STDOUT_FILENO);
+	ms_print_tokens(tokens);
 	ft_putchar_fd('\n', STDOUT_FILENO);
-	dlst_loop(lexemes);
-	dlst_map(lexemes, free_lexeme);
-	dlst_free(lexemes);
+	dlst_loop(tokens);
+	dlst_map(tokens, free_token);
+	dlst_free(tokens);
 }
 
 int	check_syntax(char *line)
