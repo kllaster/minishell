@@ -6,10 +6,11 @@ DEBUG			= 1
 ifeq ($(DEBUG), 1)
 	DEBUG_FLAGS	= -fsanitize=address -g
 else
-	DEBUG_FLAGS = -march=native -O2 -flto -msse4a -D_FORTIFY_SOURCE=2 -fpie
+	DEBUG_FLAGS = -O2 -flto-D_FORTIFY_SOURCE=2 -fpie
 endif
-PROTECT_FLAGS	= -fno-exceptions -fcf-protection=full -fstack-protector-all
+PROTECT_FLAGS	= -fno-exceptions -fstack-protector-all -fdiagnostics-color
 COMMON_FLAGS	= -std=c99 -Wall -Wextra -Werror -Wfloat-equal -MMD -pipe
+MAKEFLAGS		= -j --output-sync=recurse --no-print-directory
 CFLAGS			= $(COMMON_FLAGS) $(DEBUG_FLAGS) $(PROTECT_FLAGS)
 
 BIN_DIR			= ./
@@ -37,8 +38,8 @@ all:			$(NAME)
 $(NAME):		$(OBJS) $(LIBFT) $(GNL)
 				$(CC) $(CFLAGS) -I $(INC_DIR) $(OBJS) $(LIBS) -o $(NAME)
 
-$(BUILD_DIR)/%.o: %.c
-				$(MKDIR) $(dir $@)
+$(BUILD_DIR)/%.o:  $(SRC_DIR)/%.c
+				@if [ ! -d $(dir $@) ] ; then $(MKDIR) $(dir $@); fi
 				$(CC) $(CFLAGS) -I $(INC_DIR) -c $< -o $@
 
 ${GNL}:
@@ -60,7 +61,11 @@ fclean:
 				cd import/libft && $(MAKE) fclean
 				$(RM) $(NAME)
 
-re:				fclean all
+re:
+				$(MAKE) fclean
+				$(MAKE) all
 
--include		$(DEPS)
+ifeq ($(findstring $(MAKECMDGOALS), clean fclean re),)
+	-include $(DEPS)
+endif
 .PHONY:			all, clean, fclean, re
