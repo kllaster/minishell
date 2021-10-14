@@ -6,7 +6,7 @@
 /*   By: kdoyle <kdoyle@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/12 19:21:14 by kdoyle            #+#    #+#             */
-/*   Updated: 2021/10/14 09:06:19 by kdoyle           ###   ########.fr       */
+/*   Updated: 2021/10/14 09:27:46 by kdoyle           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static int	symbol_position(char *str, int sym)
 {
-	int32_t	i;
+	int	i;
 
 	i = 0;
 	while (str && str[i])
