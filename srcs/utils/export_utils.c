@@ -6,11 +6,43 @@
 /*   By: kdoyle <kdoyle@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/14 08:47:41 by kdoyle            #+#    #+#             */
-/*   Updated: 2021/10/14 09:14:36 by kdoyle           ###   ########.fr       */
+/*   Updated: 2021/10/14 09:25:18 by kdoyle           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	free_2d_array(char **arr)
+{
+	int32_t	i;
+
+	i = 0;
+	while (arr && arr[i])
+	{
+		free(arr[i]);
+		++i;
+	}
+	if (arr)
+		free(arr);
+}
+
+char	**copy_2d_array(char **arr)
+{
+	char	**new;
+	int32_t	i;
+
+	i = 0;
+	while (arr[i])
+		++i;
+	new = (char **)ft_calloc(sizeof(char *), i + 1);
+	i = 0;
+	while (arr[i])
+	{
+		new[i] = ft_strdup(arr[i]);
+		++i;
+	}
+	return (new);
+}
 
 static char	**realloc_2d_array(char **arr, int start_from)
 {
@@ -29,7 +61,7 @@ static char	**realloc_2d_array(char **arr, int start_from)
 	return (new);
 }
 
-static int	len_of_2d_array(char **arr)
+int	len_of_2d_array(char **arr)
 {
 	int	i;
 

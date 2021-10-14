@@ -6,7 +6,7 @@
 /*   By: kdoyle <kdoyle@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/12 19:18:29 by kdoyle            #+#    #+#             */
-/*   Updated: 2021/10/14 09:17:05 by kdoyle           ###   ########.fr       */
+/*   Updated: 2021/10/14 09:25:24 by kdoyle           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,5 +46,8 @@ void	env_builtin(void);
 char	**unset_builtin(char *key);
 int		export_builtin(char **args);
 char	**add_last_to_2d_array(char **args, char *new_arg);
+int		len_of_2d_array(char **arr);
+char	**copy_2d_array(char **arr);
+void	free_2d_array(char **arr);
 
 #endif
