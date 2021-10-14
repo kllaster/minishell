@@ -6,7 +6,7 @@
 /*   By: kdoyle <kdoyle@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/14 08:47:41 by kdoyle            #+#    #+#             */
-/*   Updated: 2021/10/14 09:25:18 by kdoyle           ###   ########.fr       */
+/*   Updated: 2021/10/14 09:33:10 by kdoyle           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	free_2d_array(char **arr)
 {
-	int32_t	i;
+	int	i;
 
 	i = 0;
 	while (arr && arr[i])
@@ -29,7 +29,7 @@ void	free_2d_array(char **arr)
 char	**copy_2d_array(char **arr)
 {
 	char	**new;
-	int32_t	i;
+	int		i;
 
 	i = 0;
 	while (arr[i])
