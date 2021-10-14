@@ -6,7 +6,7 @@
 /*   By: kdoyle <kdoyle@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/12 19:16:44 by kdoyle            #+#    #+#             */
-/*   Updated: 2021/10/14 08:34:56 by kdoyle           ###   ########.fr       */
+/*   Updated: 2021/10/14 09:29:52 by kdoyle           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int	check_key(char *env, char *key)
 
 static char	*cut_pwd(char *pwd)
 {
-	int32_t	i;
+	int		i;
 	char	*res;
 
 	i = ft_strlen(pwd) - 1;
@@ -46,7 +46,7 @@ static char	*cut_pwd(char *pwd)
 static char	*make_valid_string(char **dirs, char *pwd)
 {
 	char	*tmp;
-	int32_t	i;
+	int		i;
 
 	i = 0;
 	while (dirs[i])
