@@ -4,7 +4,8 @@
 # include "libft.h"
 # include "get_next_line.h"
 # include "utils.h"
-# include "parser.h"
+# include "tokenizer.h"
+# include "lexer.h"
 # include "builtin.h"
 
 char	**g_envp;

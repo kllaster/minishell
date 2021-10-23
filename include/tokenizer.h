@@ -1,5 +1,5 @@
-#ifndef PARSER_H
-# define PARSER_H
+#ifndef TOKENIZER_H
+# define TOKENIZER_H
 
 # include "minishell.h"
 
@@ -12,8 +12,8 @@ typedef enum e_operators
 	D_QUOTE = '"',
 	L_REDIR = '<',
 	R_REDIR = '>',
-	DL_REDIR = 'L',
-	DR_REDIR = 'R',
+	L_HEREDOC = 'L',
+	R_HEREDOC = 'R',
 	PIPE	= '|',
 	STR		= 'S'
 }			t_operator;
@@ -32,17 +32,8 @@ typedef struct s_token
 	char		*str;
 }				t_token;
 
-typedef struct s_cmd
-{
-	pid_t			pid;
-	int				fd[2];
-	int				error;
-	char			*exec_file;
-	char			**cmd;
-}				t_cmd;
-
 void		join_token_str(t_token *token, t_dlst *dlts_item);
-t_token	*join_var(char *str, int start_var);
+t_token		*join_var(char *str, int start_var);
 
 int			parse__str(t_dlst **tokens, const char *line, int i);
 int			parse__spaces(t_dlst **tokens, const char *line, int i);
@@ -53,7 +44,7 @@ t_dlst		*parse__var(t_token *token, t_dlst *dlts_item);
 t_dlst		*loop_vars(t_dlst *tokens);
 t_dlst		*parse_tokens(char *line);
 
-t_token	*new_token(t_operator type, char *str);
+t_token		*new_token(t_operator type, char *str);
 void		free_token(void *token);
 
 char		*get_env(char *key);

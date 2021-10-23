@@ -5,14 +5,14 @@ int	parse_token_other(t_dlst **tokens, const char *line, int i)
 	if (line[i] == R_REDIR)
 	{
 		if (line[i + 1] && line[i + 1] == R_REDIR)
-			i = parse__operator(tokens, i + 1, DR_REDIR);
+			i = parse__operator(tokens, i + 1, R_HEREDOC);
 		else
 			i = parse__operator(tokens, i, R_REDIR);
 	}
 	else if (line[i] == L_REDIR)
 	{
 		if (line[i + 1] && line[i + 1] == L_REDIR)
-			i = parse__operator(tokens, i + 1, DL_REDIR);
+			i = parse__operator(tokens, i + 1, L_HEREDOC);
 		else
 			i = parse__operator(tokens, i, L_REDIR);
 	}

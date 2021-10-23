@@ -2,7 +2,7 @@
 
 int	parse__operator(t_dlst **tokens, int i, t_operator type)
 {
-	t_dlst		*temp;
+	t_dlst	*temp;
 	t_token	*token;
 
 	if (*tokens && ((t_token *)(*tokens)->content)->type == SPACE)
@@ -19,7 +19,7 @@ int	parse__operator(t_dlst **tokens, int i, t_operator type)
 
 int	parse__spaces(t_dlst **tokens, const char *line, int i)
 {
-	t_token	*token;
+	t_token		*token;
 	t_operator	type;
 
 	type = 0;
@@ -32,8 +32,8 @@ int	parse__spaces(t_dlst **tokens, const char *line, int i)
 	if (*tokens != NULL)
 		type = ((t_token *)(*tokens)->content)->type;
 	if (line[i] && type != 0 && type != PIPE
-		&& type != R_REDIR && type != DR_REDIR
-		&& type != L_REDIR && type != DL_REDIR)
+		&& type != R_REDIR && type != R_HEREDOC
+		&& type != L_REDIR && type != L_HEREDOC)
 	{
 		token = new_token(SPACE, NULL);
 		dlst_add_front(tokens, dlst_new(token));
@@ -43,8 +43,8 @@ int	parse__spaces(t_dlst **tokens, const char *line, int i)
 
 int	parse__str(t_dlst **tokens, const char *line, int i)
 {
-	int			start;
-	char		*str;
+	int		start;
+	char	*str;
 	t_token	*token;
 
 	start = i;
@@ -70,7 +70,7 @@ int	parse__str(t_dlst **tokens, const char *line, int i)
 
 void	parse__dquote(t_dlst **tokens, const char *line, int start, int end)
 {
-	int			start_var;
+	int		start_var;
 	t_token	*token;
 
 	start_var = ft_strichr((char *)line + start, VAR);
@@ -84,7 +84,7 @@ void	parse__dquote(t_dlst **tokens, const char *line, int start, int end)
 
 int	parse__quote(t_dlst **tokens, const char *line, int i, t_operator type)
 {
-	int			start;
+	int		start;
 	t_token	*token;
 
 	start = i + 1;
