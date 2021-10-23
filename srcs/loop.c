@@ -3,6 +3,7 @@
 void	run_line(char *line)
 {
 	t_dlst	*tokens;
+	t_dlst	*lexemes;
 
 	tokens = parse_tokens(line);
 	if (tokens == NULL)
@@ -10,12 +11,19 @@ void	run_line(char *line)
 	tokens = loop_vars(tokens);
 	if (tokens == NULL)
 		return ;
+	lexemes = lexer(tokens);
+	if (lexemes == NULL)
+		return ;
 	ft_putstr_fd("tokens valid: \n", STDOUT_FILENO);
 	ms_print_tokens(tokens);
 	ft_putchar_fd('\n', STDOUT_FILENO);
+	run_cmds(lexemes);
 	dlst_loop(tokens);
 	dlst_map(tokens, free_token);
 	dlst_free(tokens);
+	dlst_loop(lexemes);
+	dlst_map(lexemes, free_cmd);
+	dlst_free(lexemes);
 }
 
 int	check_syntax(char *line)
@@ -54,10 +62,17 @@ void	loop(void)
 	ms_put_tag();
 	while (get_next_line(0, &line) > 0)
 	{
+		trimmed_line = NULL;
+		if (*line == '\0')
+		{
+			ms_put_tag();
+			free(line);
+			continue ;
+		}
 		trimmed_line = ft_strtrim(line, "\t ");
 		free(line);
 		line = trimmed_line;
-		if (line[0] && check_syntax(line) == 0)
+		if (line && check_syntax(line) == 0)
 		{
 			cmds = ft_split(line, ';');
 			i = -1;

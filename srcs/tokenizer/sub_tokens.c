@@ -22,7 +22,7 @@ t_token	*new_token(t_operator type, char *str)
 
 static void	crossing_w_next_token(t_token *token, t_dlst *dlts_item)
 {
-	char		*join;
+	char	*join;
 	t_token	*next;
 
 	next = dlts_item->next->content;
