@@ -14,6 +14,8 @@ int	add_fd(t_lexer *lexer, int fd, char *file, int flags)
 		free(error);
 		return (errno);
 	}
+	if (lexer->fd_edited[fd])
+		close(lexer->cmd_now->fd[fd]);
 	lexer->cmd_now->fd[fd] = fd_new;
 	lexer->fd_edited[fd] = 1;
 	return (0);
@@ -49,6 +51,7 @@ void	create_cmd(t_lexer *lexer, t_dlst **lexemes, char *str)
 		lexer->cmd_now = kl_calloc(1, sizeof(t_cmd));
 		lexer->cmd_now->fd[0] = STDIN_FILENO;
 		lexer->cmd_now->fd[1] = STDOUT_FILENO;
+		ft_bzero(&lexer->fd_edited, sizeof(int) * 2);
 		lexer->stop_parse_str = 0;
 		if (lexer->pipe)
 			lexer->cmd_now->fd[STDIN_FILENO] = lexer->fd_pipe[STDIN_FILENO];
@@ -57,7 +60,7 @@ void	create_cmd(t_lexer *lexer, t_dlst **lexemes, char *str)
 	if (str)
 	{
 		lexer->cmd_now->cmd
-			= (char **)kl_add_to_arr((void **)lexer->cmd_now->cmd, str);
+			= (char **)arr_add_back((void **)lexer->cmd_now->cmd, str);
 	}
 }
 
@@ -73,7 +76,6 @@ int	lexer__iterator(t_dlst **lexemes, t_dlst *tokens, t_lexer *lexer)
 		file = get_filename(tokens);
 		if (file == NULL)
 			return (1);
-		lexer->fd_edited[STDIN_FILENO] = 1;
 		if (add_fd(lexer, STDIN_FILENO, file, O_RDONLY) != 0)
 			return (2);
 		return (-1);
@@ -84,7 +86,6 @@ int	lexer__iterator(t_dlst **lexemes, t_dlst *tokens, t_lexer *lexer)
 		file = get_filename(tokens);
 		if (file == NULL)
 			return (1);
-		lexer->fd_edited[STDOUT_FILENO] = 1;
 		if (add_fd(lexer, STDOUT_FILENO, file,
 				O_CREAT | O_WRONLY | O_TRUNC) != 0)
 			return (2);
@@ -96,7 +97,6 @@ int	lexer__iterator(t_dlst **lexemes, t_dlst *tokens, t_lexer *lexer)
 		file = get_filename(tokens);
 		if (file == NULL)
 			return (1);
-		lexer->fd_edited[STDOUT_FILENO] = 1;
 		if (add_fd(lexer, STDOUT_FILENO, file,
 				O_CREAT | O_WRONLY | O_APPEND) != 0)
 			return (2);
@@ -106,7 +106,6 @@ int	lexer__iterator(t_dlst **lexemes, t_dlst *tokens, t_lexer *lexer)
 	{
 		lexer->stop_parse_str = 1;
 		// file = heredoc();
-		// lexer->fd_edited[STDIN_FILENO] = 1;
 		// if (add_fd(lexer, STDIN_FILENO, file, O_RDONLY) != 0)
 		// 	return (2);
 		return (-1);
@@ -118,7 +117,7 @@ int	lexer__iterator(t_dlst **lexemes, t_dlst *tokens, t_lexer *lexer)
 		else
 		{
 			lexer->cmd_now->cmd
-				= (char **)kl_add_to_arr((void **)lexer->cmd_now->cmd,
+				= (char **)arr_add_back((void **)lexer->cmd_now->cmd,
 					ft_strdup(((t_token *)tokens->content)->str));
 		}
 		return (0);
