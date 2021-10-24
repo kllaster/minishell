@@ -1,74 +1,24 @@
 #include "minishell.h"
 
-static int	symbol_position(char *str, int sym)
+int	unset_builtin(t_cmd *s_cmd)
 {
-	int	i;
-
-	i = 0;
-	while (str && str[i])
-	{
-		if (str[i] == sym)
-			return (i);
-		++i;
-	}
-	return (-1);
-}
-
-static char	*find_envp_var(char *key, int len)
-{
-	int	i;
-	int	sym;
-
-	i = 0;
-	while (g_envp[i])
-	{
-		if (!strncmp(g_envp[i], key, len))
-		{
-			if (check_key(g_envp[i], key))
-			{
-				sym = symbol_position(g_envp[i], '=');
-				return (ft_substr(g_envp[i], sym + 1, ft_strlen(g_envp[i])));
-			}
-		}
-		++i;
-	}
-	return (NULL);
-}
-
-static int	len_g_envp(void)
-{
-	int	i;
-
-	i = 0;
-	while (g_envp[i])
-		i++;
-	return (i);
-}
-
-char	**unset_builtin(char *key)
-{
-	char	**new;
-	char	*find;
 	int		i;
-	int		j;
+	int		a;
+	int		check_new;
+	char	**new_envp;
+	char	*key_name;
 
-	i = 0;
-	j = 0;
-	find = find_envp_var(key, ft_strlen(key));
-	if (!find)
-		return (g_envp);
-	new = (char **)ft_calloc(sizeof(char *), len_g_envp() + 1);
-	while (g_envp[i])
+	a = -1;
+	while (s_cmd->cmd[++a])
 	{
-		if (!ft_strncmp(g_envp[i], key, ft_strlen(key))
-			&& check_key(g_envp[i], key))
-		{
-			++i;
+		i = 0;
+		key_name = kl_strjoin_free(ft_strdup(s_cmd->cmd[a]), ft_strdup("="));
+		check_new = check_new_env(g_envp, key_name);
+		free(key_name);
+		if (check_new == -1)
 			continue ;
-		}
-		new[j] = ft_strdup(g_envp[i]);
-		++i;
-		++j;
+		new_envp = (char **)arr_remove_el((void **)g_envp, check_new);
+		g_envp = new_envp;
 	}
-	return (new);
+	return (0);
 }

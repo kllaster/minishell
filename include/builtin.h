@@ -15,7 +15,7 @@ int	exit_builtin(t_cmd *s_cmd);
 int	echo_builtin(t_cmd *s_cmd);
 int	pwd_builtin(t_cmd *s_cmd);
 int	env_builtin(t_cmd *s_cmd);
-// char	**unset_builtin(t_cmd *s_cmd);
+int	unset_builtin(t_cmd *s_cmd);
 // int		export_builtin(t_cmd *s_cmd);
 
 int		check_key(char *env, char *key);

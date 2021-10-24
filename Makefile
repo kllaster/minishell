@@ -42,6 +42,7 @@ SRCS			=	srcs/main.c\
 					srcs/builtin/echo.c\
 					srcs/builtin/env.c\
 					srcs/builtin/pwd.c\
+					srcs/builtin/unset.c\
 
 OBJS			= $(notdir $(SRCS))
 OBJS			:= $(subst $(SRC_DIR), $(BUILD_DIR), $(SRCS:%.c=%.o))

@@ -48,6 +48,7 @@ t_token		*new_token(t_operator type, char *str);
 void		free_token(void *token);
 
 char		*get_env(char *key);
+int			check_new_env(char **envp, char *item);
 char		**create_envp(char **envp, char *item);
 
 #endif
