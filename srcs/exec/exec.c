@@ -78,10 +78,8 @@ void	run_cmds(t_dlst *lexemes)
 			res = pwd_builtin(s_cmd);
 		else if (ft_strncmp(s_cmd->cmd[0], "env", ft_strlen(s_cmd->cmd[0])) == 0)
 			res = env_builtin(s_cmd);
-		// else if (ft_strncmp(s_cmd->cmd[0], "unset", ft_strlen(s_cmd->cmd[0])) == 0)
-		// 	res = unset_builtin(s_cmd);
-		// else if (ft_strncmp(s_cmd->cmd[0], "export", ft_strlen(s_cmd->cmd[0])) == 0)
-		// 	res = export_builtin(s_cmd);
+		else if (ft_strncmp(s_cmd->cmd[0], "unset", ft_strlen(s_cmd->cmd[0])) == 0)
+			res = unset_builtin(s_cmd);
 		else
 			res = exec_cmd(s_cmd);
 		if (res != 0)

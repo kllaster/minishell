@@ -2,7 +2,6 @@
 
 int	unset_builtin(t_cmd *s_cmd)
 {
-	int		i;
 	int		a;
 	int		check_new;
 	char	**new_envp;
@@ -11,7 +10,6 @@ int	unset_builtin(t_cmd *s_cmd)
 	a = -1;
 	while (s_cmd->cmd[++a])
 	{
-		i = 0;
 		key_name = kl_strjoin_free(ft_strdup(s_cmd->cmd[a]), ft_strdup("="));
 		check_new = check_new_env(g_envp, key_name);
 		free(key_name);

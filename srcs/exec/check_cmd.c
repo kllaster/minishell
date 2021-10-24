@@ -39,8 +39,9 @@ int	check_cmd(t_cmd *s_cmd)
 	kl_free_arr(exec_file_p);
 	if (s_cmd->exec_file)
 		return (0);
-	error = kl_strjoin_free(ft_strdup("command not found: "),
-			ft_strdup(s_cmd->cmd[0]));
+	error = kl_strjoin_free(ft_strdup(s_cmd->cmd[0]), ft_strdup(": "));
+	error = kl_strjoin_free(error, ft_strdup("command not found"));
 	ms_print(STDERR_FILENO, COLOR_RED, error);
+	free(error);
 	return (1);
 }
