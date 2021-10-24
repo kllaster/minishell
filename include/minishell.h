@@ -1,6 +1,7 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+# include <sys/wait.h>
 # include "libft.h"
 # include "get_next_line.h"
 # include "utils.h"

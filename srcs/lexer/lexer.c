@@ -74,7 +74,7 @@ int	lexer__iterator(t_dlst **lexemes, t_dlst *tokens, t_lexer *lexer)
 		if (file == NULL)
 			return (1);
 		lexer->fd_edited[STDIN_FILENO] = 1;
-		if (add_fd(lexer, STDIN_FILENO, file, O_RDONLY | S_IRWXU) != 0)
+		if (add_fd(lexer, STDIN_FILENO, file, O_RDONLY) != 0)
 			return (2);
 		return (-1);
 	}
@@ -107,7 +107,7 @@ int	lexer__iterator(t_dlst **lexemes, t_dlst *tokens, t_lexer *lexer)
 		lexer->stop_parse_str = 1;
 		// file = heredoc();
 		// lexer->fd_edited[STDIN_FILENO] = 1;
-		// if (add_fd(lexer, STDIN_FILENO, file, O_RDONLY | S_IRWXU) != 0)
+		// if (add_fd(lexer, STDIN_FILENO, file, O_RDONLY) != 0)
 		// 	return (2);
 		return (-1);
 	}
