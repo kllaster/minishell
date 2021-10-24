@@ -13,38 +13,30 @@ static int	check_not_n(char *str)
 	return (0);
 }
 
-static void	output(int flag, char *str)
-{
-	if (flag == NOT_OPTION)
-		write(1, " ", 1);
-	ft_putstr_fd(str, STDOUT_FILENO);
-}
-
-void	echo_builtin(char *argv[])
+int	echo_builtin(t_cmd *s_cmd)
 {
 	int	i;
 	int	flag;
 
-	flag = ZERO_OPTION;
-	if (!argv[1])
-	{
-		ft_putchar_fd('\n', STDOUT_FILENO);
-		return ;
-	}
 	i = 0;
-	while (argv[++i])
+	flag = 0;
+	while (s_cmd->cmd[++i])
 	{
-		if (argv[i][0] == '-' && !check_not_n(argv[i]) && flag != NOT_OPTION)
+		if (s_cmd->cmd[i][0] == '-' && flag != 2
+			&& check_not_n(s_cmd->cmd[i]) == 0)
 		{
-			flag = FIND_OPTION;
+			flag = 1;
 			continue ;
 		}
 		else
 		{
-			output(flag, argv[i]);
-			flag = NOT_OPTION;
+			if (flag == 2)
+				write(1, " ", 1);
+			flag = 2;
+			ft_putstr_fd(s_cmd->cmd[i], STDOUT_FILENO);
 		}
 	}
-	if (flag == ZERO_OPTION)
+	if (flag == 0)
 		ft_putchar_fd('\n', STDOUT_FILENO);
+	return (0);
 }
