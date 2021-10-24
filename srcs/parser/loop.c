@@ -8,7 +8,7 @@ void	run_line(char *line)
 	lexemes = validation_lexemes(lexemes);
 	ft_putstr_fd("lexemes valid: \n", 2);
 	ms_print_lexem(lexemes);
-	dlst_loop(&lexemes);
+	dlst_loop(lexemes);
 	dlst_map(lexemes, free);
 }
 
