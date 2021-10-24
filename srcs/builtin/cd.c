@@ -1,96 +1,106 @@
 #include "minishell.h"
 
-int	check_key(char *env, char *key)
+int	chdir_check(char *path, char *pwd, char *arg)
 {
-	int	i;
+	int		res;
+	char	*env;
+	char	*error;
 
-	i = 0;
-	while (env[i] != '=')
-		++i;
-	if (i != ft_strlen(key))
-		return (0);
-	return (1);
+	res = chdir(path);
+	if (res != 0)
+	{
+		error = kl_strjoin_free(ft_strdup("cd: "), ft_strdup(arg));
+		error = kl_strjoin_free(error, ft_strdup(": "));
+		error = kl_strjoin_free(error, ft_strdup(strerror(errno)));
+		ms_print(STDERR_FILENO, COLOR_RED, error);
+		free(error);
+		return (res);
+	}
+	env = kl_strjoin_free(ft_strdup("OLDPWD="), pwd);
+	g_envp = create_envp(g_envp, env);
+	free(env);
+	env = kl_strjoin_free(ft_strdup("PWD="), path);
+	g_envp = create_envp(g_envp, env);
+	free(env);
+	return (res);
 }
 
-static char	*cut_pwd(char *pwd)
+static char	*cut_path(char *path)
 {
 	int		i;
 	char	*res;
 
-	i = ft_strlen(pwd) - 1;
-	while (pwd[i] && pwd[i] != '/')
+	i = ft_strlen(path) - 1;
+	while (path[i] && path[i] != '/')
 		--i;
-	if (pwd[i])
+	if (path[i])
 	{
-		if (pwd[i] == '/' && i == 0)
+		if (path[i] == '/' && i == 0)
 			res = ft_strdup("/");
 		else
-			res = ft_substr(pwd, 0, i);
+			res = ft_substr(path, 0, i);
 		return (res);
 	}
 	return (NULL);
 }
 
-static char	*make_valid_string(char **dirs, char *pwd)
+static char	*make_absolute_path(char **dirs, char *pwd)
 {
-	char	*tmp;
 	int		i;
+	char	*tmp;
+	char	*path;
 
-	i = 0;
-	while (dirs[i])
+	i = -1;
+	path = pwd;
+	if (dirs[0] && dirs[0][0] == '\0')
+		path = ft_strdup("/");
+	while (dirs[++i])
 	{
-		if (!ft_strncmp(dirs[i], "..", ft_strlen(dirs[i])))
+		if (ft_strncmp(dirs[i], "..", ft_strlen(dirs[i])) == 0)
 		{
-			tmp = cut_pwd(pwd);
-			if (tmp)
-			{
-				free(pwd);
-				pwd = tmp;
-			}
-		}
-		else if (!ft_strncmp(dirs[i], ".", ft_strlen(dirs[i])))
-		{
-			++i;
-			continue ;
+			tmp = cut_path(path);
+			free(path);
+			path = tmp;
 		}
 		else
-			pwd = ft_strjoin(ft_strjoin(pwd, ft_strdup("/")), dirs[i]);
-		++i;
+		{
+			tmp = path;
+			if (path[ft_strlen(path) - 1] != '/')
+				tmp = kl_strjoin_free(path, ft_strdup("/"));
+			path = ft_strjoin(tmp, dirs[i]);
+			free(tmp);
+		}
 	}
-	return (pwd);
+	return (path);
 }
 
-static int	got_to_path(int setting, char *way)
+int	cd_builtin(t_cmd *s_cmd)
 {
 	char	*path;
 	char	*pwd;
 	char	**dirs;
 
+	if (s_cmd->cmd[1] && s_cmd->cmd[2])
+	{
+		ms_print(STDERR_FILENO, COLOR_RED, "cd: too many arguments");
+		return (255);
+	}
 	pwd = get_env("PWD");
-	if (setting == TOHOME)
+	if (s_cmd->cmd[1] == NULL)
 	{
 		path = get_env("HOME");
 		if (path == NULL)
 		{
-			ms_print(STDERR_FILENO, COLOR_RED, "minishell: cd: HOME not set");
-			return (FAIL_CD);
+			free(pwd);
+			ms_print(STDERR_FILENO, COLOR_RED, "cd: HOME not set");
+			return (1);
 		}
-		return (chdir_check(path, pwd));
 	}
-	else if (setting == HAVEWAY)
+	else
 	{
-		dirs = ft_split(way, '/');
-		path = make_valid_string(dirs, ft_strdup(&pwd[4]));
-		return (chdir_check(path, pwd));
+		dirs = ft_split(s_cmd->cmd[1], '/');
+		path = make_absolute_path(dirs, ft_strdup(pwd));
+		kl_free_arr(dirs);
 	}
-	return (SUCCESS_CD);
-}
-
-int	cd_builtin(char *argv[])
-{
-	if (!argv[1])
-		return (got_to_path(TOHOME, argv[1]));
-	else if (argv[1])
-		return (got_to_path(HAVEWAY, argv[1]));
-	return (0);
+	return (chdir_check(path, pwd, s_cmd->cmd[1]));
 }
