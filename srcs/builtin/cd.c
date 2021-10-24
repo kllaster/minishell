@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-int	chdir_check(char *path, char *pwd, char *arg)
+static int	chdir_check(char *path, char *pwd, char *arg)
 {
 	int		res;
 	char	*env;
@@ -56,7 +56,9 @@ static char	*make_absolute_path(char **dirs, char *pwd)
 		path = ft_strdup("/");
 	while (dirs[++i])
 	{
-		if (ft_strncmp(dirs[i], "..", ft_strlen(dirs[i])) == 0)
+		if (ft_strncmp(dirs[i], ".", ft_strlen(dirs[i])) == 0)
+			path = kl_strjoin_free(path, ft_strdup("/./"));
+		else if (ft_strncmp(dirs[i], "..", ft_strlen(dirs[i])) == 0)
 		{
 			tmp = cut_path(path);
 			free(path);

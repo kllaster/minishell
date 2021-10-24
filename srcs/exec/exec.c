@@ -63,24 +63,24 @@ void	run_cmds(t_dlst *lexemes)
 	while (lexemes)
 	{
 		s_cmd = lexemes->content;
-		if (ft_strnstr(s_cmd->cmd[0], "cd", 2) != 0)
+		if (ft_strncmp(s_cmd->cmd[0], "cd", ft_strlen(s_cmd->cmd[0])) == 0)
 			res = cd_builtin(s_cmd);
-		else if (ft_strnstr(s_cmd->cmd[0], "exit", 4) != 0)
+		else if (ft_strncmp(s_cmd->cmd[0], "exit", ft_strlen(s_cmd->cmd[0])) == 0)
 		{
 			g_exit = 1;
 			res = exit_builtin(s_cmd);
 			g_exit_code = res;
 			break ;
 		}
-		// else if (ft_strnstr(s_cmd->cmd[0], "echo", 4) != 0)
-		// 	res = echo_builtin(s_cmd);
-		// else if (ft_strnstr(s_cmd->cmd[0], "pwd", 4) != 0)
+		else if (ft_strncmp(s_cmd->cmd[0], "echo", ft_strlen(s_cmd->cmd[0])) == 0)
+			res = echo_builtin(s_cmd);
+		// else if (ft_strncmp(s_cmd->cmd[0], "pwd", ft_strlen(s_cmd->cmd[0])) == 0)
 		// 	res = pwd_builtin(s_cmd);
-		// else if (ft_strnstr(s_cmd->cmd[0], "env", 3) != 0)
-		// 	res = env_builtin(s_cmd);
-		// else if (ft_strnstr(s_cmd->cmd[0], "unset", 5) != 0)
+		else if (ft_strncmp(s_cmd->cmd[0], "env", ft_strlen(s_cmd->cmd[0])) == 0)
+			res = env_builtin(s_cmd);
+		// else if (ft_strncmp(s_cmd->cmd[0], "unset", ft_strlen(s_cmd->cmd[0])) == 0)
 		// 	res = unset_builtin(s_cmd);
-		// else if (ft_strnstr(s_cmd->cmd[0], "export", 6) != 0)
+		// else if (ft_strncmp(s_cmd->cmd[0], "export", ft_strlen(s_cmd->cmd[0])) == 0)
 		// 	res = export_builtin(s_cmd);
 		else
 			res = exec_cmd(s_cmd);
