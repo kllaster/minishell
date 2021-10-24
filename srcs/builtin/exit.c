@@ -2,29 +2,35 @@
 
 static int	error_output(char *str)
 {
-	ft_putstr_fd("exit: ", STDOUT_FILENO);
-	ft_putstr_fd(str, STDOUT_FILENO);
-	ft_putstr_fd(": numeric argument required", STDOUT_FILENO);
+	char	*error;
+
+	error = kl_strjoin_free(ft_strdup("exit: "), ft_strdup(str));
+	error = kl_strjoin_free(error, ft_strdup(": numeric argument required"));
+	ms_print(STDERR_FILENO, COLOR_RED, error);
+	free(error);
 	return (255);
 }
 
-int	exit_builtin(char *argv[])
+int	exit_builtin(t_cmd *s_cmd)
 {
 	int	i;
 
-	i = -1;
-	if (argv[1] && argv[2])
+	if (s_cmd->cmd[1] && s_cmd->cmd[2])
 	{
-		ms_print(STDERR_FILENO, COLOR_RED, "bash: exit: too many arguments");
-		return (ER_COUN_ARG);
+		ms_print(STDERR_FILENO, COLOR_RED, "exit: too many arguments");
+		return (1);
 	}
-	while (argv[1][++i])
+	if (s_cmd->cmd[1])
 	{
-		if (!ft_isdigit(argv[1][i]))
-			return (error_output(argv[1]));
+		i = -1;
+		while (s_cmd->cmd[1][++i])
+		{
+			if (!ft_isdigit(s_cmd->cmd[1][i]))
+				return (error_output(s_cmd->cmd[1]));
+		}
+		ft_putstr_fd("exit\n", STDOUT_FILENO);
+		return (ft_atoi(s_cmd->cmd[1]));
 	}
-	if (argv[1])
-		return (ft_atoi(argv[1]));
-	else
-		return (SUCCESS);
+	ft_putstr_fd("exit\n", STDOUT_FILENO);
+	return (0);
 }

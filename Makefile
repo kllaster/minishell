@@ -25,7 +25,20 @@ LIBFT			= ${LIBFT_DIR}/bin/libft.a
 
 LIBS			= ${LIBFT} ${GNL} -ltermcap
 
-SRCS			= $(shell find $(SRC_DIR) -name "*.c")
+SRCS			=	srcs/main.c\
+					srcs/loop.c\
+					srcs/tokenizer/tokenizer.c\
+					srcs/tokenizer/parse_tokens.c\
+					srcs/tokenizer/var_token.c\
+					srcs/tokenizer/sub_tokens.c\
+					srcs/lexer/lexer.c\
+					srcs/lexer/sub_lexems.c\
+					srcs/exec/exec.c\
+					srcs/exec/check_cmd.c\
+					srcs/utils/env.c\
+					srcs/utils/ms_sub.c\
+					srcs/builtin/cd.c\
+					srcs/builtin/exit.c\
 
 OBJS			= $(notdir $(SRCS))
 OBJS			:= $(subst $(SRC_DIR), $(BUILD_DIR), $(SRCS:%.c=%.o))

@@ -9,6 +9,8 @@
 # include "lexer.h"
 # include "builtin.h"
 
+int		g_exit;
+int		g_exit_code;
 char	**g_envp;
 
 void	loop(void);

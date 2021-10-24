@@ -10,13 +10,8 @@ enum e_options {
 	NOT_OPTION = 2
 };
 
-enum e_exit_ret {
-	SUCCESS = 0,
-	ER_COUN_ARG = 1
-};
-
 int		cd_builtin(t_cmd *s_cmd);
-// int		exit_builtin(t_cmd *s_cmd);
+int		exit_builtin(t_cmd *s_cmd);
 // void	echo_builtin(t_cmd *s_cmd);
 // void	pwd_builtin(t_cmd *s_cmd);
 // void	env_builtin(t_cmd *s_cmd);

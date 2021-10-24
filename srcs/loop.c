@@ -77,10 +77,16 @@ void	loop(void)
 			cmds = ft_split(line, ';');
 			i = -1;
 			while (cmds[++i])
+			{
 				run_line(cmds[i]);
+				if (g_exit)
+					break ;
+			}
 			kl_free_arr(cmds);
 		}
-		ms_put_tag();
 		free(line);
+		if (g_exit)
+			break ;
+		ms_put_tag();
 	}
 }
