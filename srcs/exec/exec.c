@@ -74,8 +74,8 @@ void	run_cmds(t_dlst *lexemes)
 		}
 		else if (ft_strncmp(s_cmd->cmd[0], "echo", ft_strlen(s_cmd->cmd[0])) == 0)
 			res = echo_builtin(s_cmd);
-		// else if (ft_strncmp(s_cmd->cmd[0], "pwd", ft_strlen(s_cmd->cmd[0])) == 0)
-		// 	res = pwd_builtin(s_cmd);
+		else if (ft_strncmp(s_cmd->cmd[0], "pwd", ft_strlen(s_cmd->cmd[0])) == 0)
+			res = pwd_builtin(s_cmd);
 		else if (ft_strncmp(s_cmd->cmd[0], "env", ft_strlen(s_cmd->cmd[0])) == 0)
 			res = env_builtin(s_cmd);
 		// else if (ft_strncmp(s_cmd->cmd[0], "unset", ft_strlen(s_cmd->cmd[0])) == 0)

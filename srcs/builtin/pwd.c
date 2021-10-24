@@ -1,9 +1,10 @@
 #include "minishell.h"
 
-void	pwd_builtin(void)
+int	pwd_builtin(t_cmd *s_cmd)
 {
 	char	*path;
 
+	(void)s_cmd;
 	path = get_env("PWD");
 	if (path)
 	{
@@ -11,5 +12,9 @@ void	pwd_builtin(void)
 		ft_putchar_fd('\n', STDOUT_FILENO);
 	}
 	else
-		ms_print(STDERR_FILENO, COLOR_RED, "environment variable is not set");
+	{
+		ms_print(STDERR_FILENO, COLOR_RED, "pwd: environment variable is not set");
+		return (1);
+	}
+	return (0);
 }

@@ -13,7 +13,7 @@ enum e_options {
 int	cd_builtin(t_cmd *s_cmd);
 int	exit_builtin(t_cmd *s_cmd);
 int	echo_builtin(t_cmd *s_cmd);
-// void	pwd_builtin(t_cmd *s_cmd);
+int	pwd_builtin(t_cmd *s_cmd);
 int	env_builtin(t_cmd *s_cmd);
 // char	**unset_builtin(t_cmd *s_cmd);
 // int		export_builtin(t_cmd *s_cmd);
