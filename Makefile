@@ -6,9 +6,9 @@ DEBUG			= 1
 ifeq ($(DEBUG), 1)
 	DEBUG_FLAGS	= -fsanitize=address -g
 else
-	DEBUG_FLAGS = -O2 -flto-D_FORTIFY_SOURCE=2 -fpie
+	DEBUG_FLAGS = -O2 -flto -D_FORTIFY_SOURCE=2 -fpie
 endif
-PROTECT_FLAGS	= -fno-exceptions -fstack-protector-all -fdiagnostics-color
+PROTECT_FLAGS	= -fno-exceptions -fstack-protector-all
 COMMON_FLAGS	= -std=c99 -Wall -Wextra -Werror -Wfloat-equal -MMD -pipe
 MAKEFLAGS		= -j --output-sync=recurse --no-print-directory
 CFLAGS			= $(COMMON_FLAGS) $(DEBUG_FLAGS) $(PROTECT_FLAGS)
