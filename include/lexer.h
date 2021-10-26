@@ -3,27 +3,52 @@
 
 # include "minishell.h"
 
-typedef struct s_cmd
+typedef enum e_operators
 {
-	pid_t			pid;
-	int				fd[2];
-	int				error;
-	char			*exec_file;
-	char			**cmd;
-}				t_cmd;
+	VAR		= '$',
+	SET_VAR	= '=',
+	SPACE	= ' ',
+	S_QUOTE	= '\'',
+	D_QUOTE = '"',
+	L_REDIR = '<',
+	R_REDIR = '>',
+	L_HEREDOC = 'L',
+	R_HEREDOC = 'R',
+	PIPE	= '|',
+	STR		= 'S'
+}			t_operator;
 
-typedef struct s_lexer
+typedef struct s_join_var
 {
-	t_cmd			*cmd_now;
-	int				fd_pipe[2];
-	int				fd_edited[2];
-	int				pipe;
-	int				stop_parse_str;
-}				t_lexer;
+	int			end_prev_var;
+	int			start_var;
+	int			end_var;
+	char		*res;
+}				t_join_var;
 
-void	free_cmd(void *p);
-int		check_cmd(t_cmd *s_cmd);
-void	run_cmds(t_dlst *lexemes);
-t_dlst	*lexer(t_dlst *tokens);
+typedef struct s_lexeme
+{
+	t_operator	type;
+	char		*str;
+}				t_lexeme;
+
+void		join_lexeme_str(t_lexeme *lexeme, t_dlst *dlts_item);
+t_lexeme	*join_var(char *str, int start_var);
+
+int			parse__str(t_dlst **lexemes, const char *line, int i);
+int			parse__spaces(t_dlst **lexemes, const char *line, int i);
+int			parse__operator(t_dlst **lexemes, int i, t_operator type);
+int			parse__quote(t_dlst **lexemes, const char *line,
+				int i, t_operator type);
+t_dlst		*parse__var(t_lexeme *lexeme, t_dlst *dlts_item);
+t_dlst		*loop_vars(t_dlst *lexemes);
+t_dlst		*parse_lexemes(char *line);
+
+t_lexeme	*new_lexeme(t_operator type, char *str);
+void		free_lexeme(void *lexeme);
+
+char		*get_env(char *key);
+int			check_new_env(char **envp, char *item);
+char		**create_envp(char **envp, char *item);
 
 #endif

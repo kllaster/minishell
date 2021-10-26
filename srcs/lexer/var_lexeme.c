@@ -1,49 +1,49 @@
 #include "minishell.h"
 
-t_list_var	loop_vars__iterator(t_dlst *tokens, t_dlst *prev)
+t_list_var	loop_vars__iterator(t_dlst *lexemes, t_dlst *prev)
 {
 	t_dlst		*temp;
 	t_list_var	list;
 
 	list.var2 = prev;
-	if (((t_token *)tokens->content)->type == STR
-		&& ((t_token *)tokens->content)->str[0] == '\0')
+	if (((t_lexeme *)lexemes->content)->type == STR
+		&& ((t_lexeme *)lexemes->content)->str[0] == '\0')
 	{
-		temp = tokens->next;
-		free_token(tokens->content);
-		dlst_remove_node(tokens);
+		temp = lexemes->next;
+		free_lexeme(lexemes->content);
+		dlst_remove_node(lexemes);
 		list.var1 = temp;
 	}
 	else
 	{
-		list.var2 = tokens;
-		list.var1 = tokens->next;
+		list.var2 = lexemes;
+		list.var1 = lexemes->next;
 	}
 	return (list);
 }
 
-t_dlst	*loop_vars(t_dlst *tokens)
+t_dlst	*loop_vars(t_dlst *lexemes)
 {
 	t_dlst		*prev;
 	t_list_var	list;
 
 	prev = NULL;
-	while (tokens)
+	while (lexemes)
 	{
-		if (((t_token *)tokens->content)->type == SET_VAR)
+		if (((t_lexeme *)lexemes->content)->type == SET_VAR)
 		{
-			tokens = parse__var(tokens->content, tokens);
-			prev = tokens;
+			lexemes = parse__var(lexemes->content, lexemes);
+			prev = lexemes;
 		}
 		else
 		{
-			list = loop_vars__iterator(tokens, prev);
-			tokens = list.var1;
+			list = loop_vars__iterator(lexemes, prev);
+			lexemes = list.var1;
 			prev = list.var2;
 		}
 	}
-	tokens = dlst_last_node(prev);
-	return (tokens);
+	lexemes = dlst_last_node(prev);
+	return (lexemes);
 }
 
 char	*join_var_str(char *str, int end_var, char *res)
@@ -86,7 +86,7 @@ void	join_var__iterator(char *str, t_join_var *s_jv)
 		s_jv->start_var += s_jv->end_var;
 }
 
-t_token	*join_var(char *str, int start_var)
+t_lexeme	*join_var(char *str, int start_var)
 {
 	char		*temp;
 	t_join_var	*s_jv;
@@ -104,5 +104,5 @@ t_token	*join_var(char *str, int start_var)
 		free(temp);
 	}
 	free(str);
-	return (new_token(STR, s_jv->res));
+	return (new_lexeme(STR, s_jv->res));
 }

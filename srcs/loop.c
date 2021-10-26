@@ -1,32 +1,32 @@
 #include "minishell.h"
 
-void	run_line(char *line)
+static void	run_line(char *line)
 {
-	t_dlst	*tokens;
 	t_dlst	*lexemes;
+	t_dlst	*tokens;
 
-	tokens = parse_tokens(line);
-	if (tokens == NULL)
-		return ;
-	tokens = loop_vars(tokens);
-	if (tokens == NULL)
-		return ;
-	lexemes = lexer(tokens);
+	lexemes = parse_lexemes(line);
 	if (lexemes == NULL)
 		return ;
-	ft_putstr_fd("tokens valid: \n", STDOUT_FILENO);
-	ms_print_tokens(tokens);
+	lexemes = loop_vars(lexemes);
+	if (lexemes == NULL)
+		return ;
+	tokens = tokenize(lexemes);
+	if (tokens == NULL)
+		return ;
+	ft_putstr_fd("lexemes valid: \n", STDOUT_FILENO);
+	ms_print_lexemes(lexemes);
 	ft_putchar_fd('\n', STDOUT_FILENO);
-	run_cmds(lexemes);
-	dlst_loop(tokens);
-	dlst_map(tokens, free_token);
-	dlst_free(tokens);
+	run_cmds(tokens);
 	dlst_loop(lexemes);
-	dlst_map(lexemes, free_cmd);
+	dlst_map(lexemes, free_lexeme);
 	dlst_free(lexemes);
+	dlst_loop(tokens);
+	dlst_map(tokens, free_cmd);
+	dlst_free(tokens);
 }
 
-int	check_syntax(char *line)
+static int	check_syntax(char *line)
 {
 	if (ft_strnstr(line, "|", 1) != 0)
 	{
@@ -51,39 +51,42 @@ int	check_syntax(char *line)
 	return (0);
 }
 
-void	loop(void)
+static void	parse_line(char *line)
 {
 	int		i;
-	char	*line;
-	char	*trimmed_line;
 	char	**cmds;
+
+	line = ft_strtrim(line, "\t ");
+	if (line && check_syntax(line) == 0)
+	{
+		cmds = ft_split(line, ';');
+		i = -1;
+		while (cmds[++i])
+		{
+			run_line(cmds[i]);
+			if (g_exit)
+				break ;
+		}
+		kl_free_arr(cmds);
+	}
+	free(line);
+}
+
+void	loop(void)
+{
+	char	*line;
 
 	line = NULL;
 	ms_put_tag();
 	while (get_next_line(0, &line) > 0)
 	{
-		trimmed_line = NULL;
 		if (*line == '\0')
 		{
 			ms_put_tag();
 			free(line);
 			continue ;
 		}
-		trimmed_line = ft_strtrim(line, "\t ");
-		free(line);
-		line = trimmed_line;
-		if (line && check_syntax(line) == 0)
-		{
-			cmds = ft_split(line, ';');
-			i = -1;
-			while (cmds[++i])
-			{
-				run_line(cmds[i]);
-				if (g_exit)
-					break ;
-			}
-			kl_free_arr(cmds);
-		}
+		parse_line(line);
 		free(line);
 		if (g_exit)
 			break ;

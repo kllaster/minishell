@@ -55,35 +55,40 @@ int	exec_cmd(t_cmd *s_cmd)
 	return (0);
 }
 
-void	run_cmds(t_dlst *lexemes)
+int	call_cmd(t_cmd *s_cmd)
 {
-	int		res;
+	int	res;
+
+	if (kl_strcmp(s_cmd->cmd[0], "cd") == 0)
+		res = cd_builtin(s_cmd);
+	else if (kl_strcmp(s_cmd->cmd[0], "exit") == 0)
+	{
+		g_exit = 1;
+		g_exit_code = exit_builtin(s_cmd);
+		res = 1;
+	}
+	else if (kl_strcmp(s_cmd->cmd[0], "echo") == 0)
+		res = echo_builtin(s_cmd);
+	else if (kl_strcmp(s_cmd->cmd[0], "pwd") == 0)
+		res = pwd_builtin(s_cmd);
+	else if (kl_strcmp(s_cmd->cmd[0], "env") == 0)
+		res = env_builtin(s_cmd);
+	else if (kl_strcmp(s_cmd->cmd[0], "unset") == 0)
+		res = unset_builtin(s_cmd);
+	else
+		res = exec_cmd(s_cmd);
+	return (res);
+}
+
+void	run_cmds(t_dlst *tokens)
+{
 	t_cmd	*s_cmd;
 
-	while (lexemes)
+	while (tokens)
 	{
-		s_cmd = lexemes->content;
-		if (ft_strncmp(s_cmd->cmd[0], "cd", ft_strlen(s_cmd->cmd[0])) == 0)
-			res = cd_builtin(s_cmd);
-		else if (ft_strncmp(s_cmd->cmd[0], "exit", ft_strlen(s_cmd->cmd[0])) == 0)
-		{
-			g_exit = 1;
-			res = exit_builtin(s_cmd);
-			g_exit_code = res;
-			break ;
-		}
-		else if (ft_strncmp(s_cmd->cmd[0], "echo", ft_strlen(s_cmd->cmd[0])) == 0)
-			res = echo_builtin(s_cmd);
-		else if (ft_strncmp(s_cmd->cmd[0], "pwd", ft_strlen(s_cmd->cmd[0])) == 0)
-			res = pwd_builtin(s_cmd);
-		else if (ft_strncmp(s_cmd->cmd[0], "env", ft_strlen(s_cmd->cmd[0])) == 0)
-			res = env_builtin(s_cmd);
-		else if (ft_strncmp(s_cmd->cmd[0], "unset", ft_strlen(s_cmd->cmd[0])) == 0)
-			res = unset_builtin(s_cmd);
-		else
-			res = exec_cmd(s_cmd);
-		if (res != 0)
+		s_cmd = tokens->content;
+		if (call_cmd(s_cmd) != 0)
 			return ;
-		lexemes = lexemes->prev;
+		tokens = tokens->prev;
 	}
 }

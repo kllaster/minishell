@@ -9,21 +9,21 @@ void	ms_print(int fd, char *color, char *str)
 	ft_putstr_fd(COLOR_RESET, fd);
 }
 
-void	ms_print_tokens(t_dlst *dlst_item)
+void	ms_print_lexemes(t_dlst *dlst_item)
 {
-	t_token	*token;
+	t_lexeme	*lexeme;
 
 	while (dlst_item)
 	{
-		token = dlst_item->content;
+		lexeme = dlst_item->content;
 		ft_putstr_fd("---> ", STDOUT_FILENO);
-		ft_putchar_fd(token->type, STDOUT_FILENO);
+		ft_putchar_fd(lexeme->type, STDOUT_FILENO);
 		ft_putstr_fd(" <---> ", STDOUT_FILENO);
 		ft_putstr_fd("\\", STDOUT_FILENO);
-		if (token->str)
-			ft_putstr_fd(token->str, STDOUT_FILENO);
+		if (lexeme->str)
+			ft_putstr_fd(lexeme->str, STDOUT_FILENO);
 		else
-			ft_putchar_fd(token->type, STDOUT_FILENO);
+			ft_putchar_fd(lexeme->type, STDOUT_FILENO);
 		ft_putstr_fd("/", STDOUT_FILENO);
 		ft_putchar_fd('\n', STDOUT_FILENO);
 		dlst_item = dlst_item->prev;

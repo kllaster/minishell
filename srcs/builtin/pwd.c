@@ -13,7 +13,8 @@ int	pwd_builtin(t_cmd *s_cmd)
 	}
 	else
 	{
-		ms_print(STDERR_FILENO, COLOR_RED, "pwd: environment variable is not set");
+		ms_print(STDERR_FILENO, COLOR_RED,
+			"pwd: environment variable is not set");
 		return (1);
 	}
 	return (0);
