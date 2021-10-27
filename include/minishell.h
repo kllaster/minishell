@@ -2,6 +2,7 @@
 # define MINISHELL_H
 
 # include <sys/wait.h>
+# include <string.h>
 # include "libft.h"
 # include "get_next_line.h"
 # include "utils.h"

@@ -32,11 +32,12 @@ int	echo_builtin(t_cmd *s_cmd)
 		{
 			if (flag == 2)
 				write(1, " ", 1);
-			flag = 2;
+			if (flag == 0)
+				flag = 2;
 			ft_putstr_fd(s_cmd->cmd[i], STDOUT_FILENO);
 		}
 	}
-	if (flag == 0)
+	if (flag != 1)
 		ft_putchar_fd('\n', STDOUT_FILENO);
 	return (0);
 }
