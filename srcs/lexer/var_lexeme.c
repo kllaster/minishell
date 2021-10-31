@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-t_list_var	loop_vars__iterator(t_dlst *lexemes, t_dlst *prev)
+static t_list_var	loop_vars__iterator(t_dlst *lexemes, t_dlst *prev)
 {
 	t_dlst		*temp;
 	t_list_var	list;
@@ -46,7 +46,7 @@ t_dlst	*loop_vars(t_dlst *lexemes)
 	return (lexemes);
 }
 
-char	*join_var_str(char *str, int end_var, char *res)
+static char	*join_var_str(char *str, int end_var, char *res)
 {
 	char	*value;
 	char	end_symb;
@@ -60,7 +60,7 @@ char	*join_var_str(char *str, int end_var, char *res)
 	return (res);
 }
 
-void	join_var__iterator(char *str, t_join_var *s_jv)
+static void	join_var__iterator(char *str, t_join_var *s_jv)
 {
 	char	*temp;
 

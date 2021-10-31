@@ -13,30 +13,35 @@ static int	check_not_n(char *str)
 	return (0);
 }
 
-int	echo_builtin(t_cmd *s_cmd)
+int	char_iterator(char *str, int flag)
 {
-	int	i;
-	int	flag;
+	if (str[0] == '-' && flag != 2
+		&& check_not_n(str) == 0)
+	{
+		flag = 1;
+	}
+	else
+	{
+		if (flag == 2)
+			ft_putchar_fd(' ', STDOUT_FILENO);
+		if (flag == 0)
+			flag = 2;
+		ft_putstr_fd(str, STDOUT_FILENO);
+	}
+	return (flag);
+}
+
+int	echo_builtin(void *p)
+{
+	int		i;
+	int		flag;
+	t_cmd	*s_cmd;
 
 	i = 0;
 	flag = 0;
+	s_cmd = p;
 	while (s_cmd->cmd[++i])
-	{
-		if (s_cmd->cmd[i][0] == '-' && flag != 2
-			&& check_not_n(s_cmd->cmd[i]) == 0)
-		{
-			flag = 1;
-			continue ;
-		}
-		else
-		{
-			if (flag == 2)
-				write(1, " ", 1);
-			if (flag == 0)
-				flag = 2;
-			ft_putstr_fd(s_cmd->cmd[i], STDOUT_FILENO);
-		}
-	}
+		flag = char_iterator(s_cmd->cmd[i], flag);
 	if (flag != 1)
 		ft_putchar_fd('\n', STDOUT_FILENO);
 	return (0);

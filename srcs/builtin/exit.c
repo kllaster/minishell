@@ -11,10 +11,12 @@ static int	error_output(char *str)
 	return (255);
 }
 
-int	exit_builtin(t_cmd *s_cmd)
+int	exit_builtin(void *p)
 {
-	int	i;
+	int		i;
+	t_cmd	*s_cmd;
 
+	s_cmd = p;
 	if (s_cmd->cmd[1] && s_cmd->cmd[2])
 	{
 		ms_print(STDERR_FILENO, COLOR_RED, "exit: too many arguments");

@@ -14,9 +14,6 @@ static void	run_line(char *line)
 	tokens = tokenize(lexemes);
 	if (tokens == NULL)
 		return ;
-	ft_putstr_fd("lexemes valid: \n", STDOUT_FILENO);
-	ms_print_lexemes(lexemes);
-	ft_putchar_fd('\n', STDOUT_FILENO);
 	run_cmds(tokens);
 	dlst_loop(lexemes);
 	dlst_map(lexemes, free_lexeme);
@@ -74,22 +71,23 @@ static void	parse_line(char *line)
 
 void	loop(void)
 {
-	char	*line;
+	char	**line;
 
-	line = NULL;
+	line = kl_malloc(sizeof(char *));
 	ms_put_tag();
-	while (get_next_line(0, &line) > 0)
+	while (get_next_line(0, line) > 0)
 	{
-		if (*line == '\0')
+		if (**line == '\0')
 		{
 			ms_put_tag();
-			free(line);
+			free(*line);
 			continue ;
 		}
-		parse_line(line);
-		free(line);
+		parse_line(*line);
+		free(*line);
 		if (g_exit)
 			break ;
 		ms_put_tag();
 	}
+	free(line);
 }

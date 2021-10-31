@@ -3,11 +3,13 @@
 
 # include "minishell.h"
 
-int	cd_builtin(t_cmd *s_cmd);
-int	exit_builtin(t_cmd *s_cmd);
-int	echo_builtin(t_cmd *s_cmd);
-int	pwd_builtin(t_cmd *s_cmd);
-int	env_builtin(t_cmd *s_cmd);
-int	unset_builtin(t_cmd *s_cmd);
+int		cd_builtin(void *s_cmd);
+int		exit_builtin(void *s_cmd);
+int		echo_builtin(void *s_cmd);
+int		pwd_builtin(void *s_cmd);
+int		env_builtin(void *s_cmd);
+int		unset_builtin(void *s_cmd);
+
+char	*make_absolute_path(char **dirs, char *pwd);
 
 #endif

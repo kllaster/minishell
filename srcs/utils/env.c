@@ -42,7 +42,7 @@ int	check_new_env(char **envp, char *item)
 	return (check_new);
 }
 
-char	**put_envp(char **envp, char **new_envp,
+static char	**put_envp(char **envp, char **new_envp,
 					int check_new, char *item)
 {
 	int	i;
@@ -79,5 +79,7 @@ char	**create_envp(char **envp, char *item)
 		i += 1;
 	new_envp = kl_malloc(sizeof(char *) * (i + 1));
 	put_envp(envp, new_envp, check_new, item);
+	if (item != NULL && envp)
+		kl_free_arr(envp);
 	return (new_envp);
 }

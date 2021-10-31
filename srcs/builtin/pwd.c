@@ -1,10 +1,10 @@
 #include "minishell.h"
 
-int	pwd_builtin(t_cmd *s_cmd)
+int	pwd_builtin(void *p)
 {
 	char	*path;
 
-	(void)s_cmd;
+	(void)p;
 	path = get_env("PWD");
 	if (path)
 	{

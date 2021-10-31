@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-int	parse_lexeme_other(t_dlst **lexemes, const char *line, int i)
+static int	parse_lexeme_other(t_dlst **lexemes, const char *line, int i)
 {
 	if (line[i] == R_REDIR)
 	{

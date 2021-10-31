@@ -1,10 +1,10 @@
 #include "minishell.h"
 
-int	env_builtin(t_cmd *s_cmd)
+int	env_builtin(void *p)
 {
 	int	i;
 
-	(void)s_cmd;
+	(void)p;
 	i = -1;
 	while (g_envp[++i])
 	{

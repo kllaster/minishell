@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-int	wait_processes(t_cmd *s_cmd)
+static int	wait_processes(t_cmd *s_cmd)
 {
 	int		status;
 
@@ -25,58 +25,72 @@ int	wait_processes(t_cmd *s_cmd)
 	return (0);
 }
 
-int	exec_cmd(t_cmd *s_cmd)
+static int	exec_cmd(t_cmd *s_cmd)
 {
-	char	*error;
+	int	saved_fd[2];
 
-	if (check_cmd(s_cmd) == 1)
-		return (1);
+	saved_fd[0] = dup(0);
+	saved_fd[1] = dup(1);
+	if (dup_fd(s_cmd->fd[0], STDIN_FILENO) != 0)
+		return (errno);
+	if (dup_fd(s_cmd->fd[1], STDOUT_FILENO) != 0)
+		return (errno);
+	if (s_cmd->fbuiltin)
+		return (s_cmd->fbuiltin(s_cmd));
+	else if (execve(s_cmd->exec_file, s_cmd->cmd, g_envp) == -1)
+	{
+		ms_print(STDERR_FILENO, COLOR_RED, "execve()");
+		return (errno);
+	}
+	if (dup_fd(saved_fd[0], STDIN_FILENO) != 0)
+		return (errno);
+	if (dup_fd(saved_fd[1], STDOUT_FILENO) != 0)
+		return (errno);
+	return (0);
+}
+
+static int	exec_cmd_fork(t_cmd *s_cmd)
+{
 	s_cmd->pid = fork();
 	if (s_cmd->pid < 0)
-		kl_end("fork()", errno);
-	else if (s_cmd->pid == 0)
 	{
-		if (dup2(s_cmd->fd[0], STDIN_FILENO) == -1)
-			kl_end("dup2() STDIN", errno);
-		if (dup2(s_cmd->fd[1], STDOUT_FILENO) == -1)
-			kl_end("dup2() STDOUT", errno);
-		if (execve(s_cmd->exec_file, s_cmd->cmd, g_envp) == -1)
-			kl_end("execve()", errno);
-		exit(0);
+		ms_print(STDERR_FILENO, COLOR_RED, "fork()");
+		return (errno);
 	}
+	else if (s_cmd->pid == 0)
+		exit(exec_cmd(s_cmd));
 	if (wait_processes(s_cmd) != 0 && s_cmd->error != 0)
 	{
-		error = kl_strjoin_free(ft_strdup(s_cmd->cmd[0]), ft_strdup(": "));
-		error = kl_strjoin_free(error, ft_strdup(strerror(errno)));
-		ms_print(STDERR_FILENO, COLOR_RED, error);
-		free(error);
+		ms_print_cmd_error(s_cmd->cmd[0], strerror(errno));
 		return (errno);
 	}
 	return (0);
 }
 
-int	call_cmd(t_cmd *s_cmd)
+static int	call_cmd(t_cmd *s_cmd)
 {
 	int	res;
 
-	if (kl_strcmp(s_cmd->cmd[0], "cd") == 0)
-		res = cd_builtin(s_cmd);
-	else if (kl_strcmp(s_cmd->cmd[0], "exit") == 0)
+	if (check_cmd(s_cmd) == 1)
+		return (1);
+	if (s_cmd->is_pipe == 0)
 	{
-		g_exit = 1;
-		g_exit_code = exit_builtin(s_cmd);
-		res = 1;
+		if (s_cmd->fbuiltin)
+		{
+			if (s_cmd->fbuiltin == exit_builtin)
+			{
+				g_exit = 1;
+				g_exit_code = s_cmd->fbuiltin(s_cmd);
+				res = 1;
+			}
+			else
+				res = exec_cmd(s_cmd);
+		}
+		else
+			res = exec_cmd_fork(s_cmd);
 	}
-	else if (kl_strcmp(s_cmd->cmd[0], "echo") == 0)
-		res = echo_builtin(s_cmd);
-	else if (kl_strcmp(s_cmd->cmd[0], "pwd") == 0)
-		res = pwd_builtin(s_cmd);
-	else if (kl_strcmp(s_cmd->cmd[0], "env") == 0)
-		res = env_builtin(s_cmd);
-	else if (kl_strcmp(s_cmd->cmd[0], "unset") == 0)
-		res = unset_builtin(s_cmd);
 	else
-		res = exec_cmd(s_cmd);
+		res = exec_cmd_fork(s_cmd);
 	return (res);
 }
 

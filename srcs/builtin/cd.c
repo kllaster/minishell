@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-static int	chdir_check(char *path, char *pwd, char *arg)
+static int	path_check(char *path, char *pwd, char *arg)
 {
 	int		res;
 	char	*env;
@@ -9,10 +9,9 @@ static int	chdir_check(char *path, char *pwd, char *arg)
 	res = chdir(path);
 	if (res != 0)
 	{
-		error = kl_strjoin_free(ft_strdup("cd: "), ft_strdup(arg));
-		error = kl_strjoin_free(error, ft_strdup(": "));
+		error = kl_strjoin_free(ft_strdup(arg), ft_strdup(": "));
 		error = kl_strjoin_free(error, ft_strdup(strerror(errno)));
-		ms_print(STDERR_FILENO, COLOR_RED, error);
+		ms_print_cmd_error("cd", error);
 		free(error);
 		return (res);
 	}
@@ -25,84 +24,45 @@ static int	chdir_check(char *path, char *pwd, char *arg)
 	return (res);
 }
 
-static char	*cut_path(char *path)
-{
-	int		i;
-	char	*res;
-
-	i = ft_strlen(path) - 1;
-	while (path[i] && path[i] != '/')
-		--i;
-	if (path[i])
-	{
-		if (path[i] == '/' && i == 0)
-			res = ft_strdup("/");
-		else
-			res = ft_substr(path, 0, i);
-		return (res);
-	}
-	return (NULL);
-}
-
-static char	*make_absolute_path(char **dirs, char *pwd)
-{
-	int		i;
-	char	*tmp;
-	char	*path;
-
-	i = -1;
-	path = pwd;
-	if (dirs[0] && dirs[0][0] == '\0')
-		path = ft_strdup("/");
-	while (dirs[++i])
-	{
-		if (ft_strncmp(dirs[i], ".", ft_strlen(dirs[i])) == 0)
-			path = kl_strjoin_free(path, ft_strdup("/./"));
-		else if (ft_strncmp(dirs[i], "..", ft_strlen(dirs[i])) == 0)
-		{
-			tmp = cut_path(path);
-			free(path);
-			path = tmp;
-		}
-		else
-		{
-			tmp = path;
-			if (path[ft_strlen(path) - 1] != '/')
-				tmp = kl_strjoin_free(path, ft_strdup("/"));
-			path = ft_strjoin(tmp, dirs[i]);
-			free(tmp);
-		}
-	}
-	return (path);
-}
-
-int	cd_builtin(t_cmd *s_cmd)
+static char	*get_path(char *arg, char *pwd)
 {
 	char	*path;
-	char	*pwd;
 	char	**dirs;
 
-	if (s_cmd->cmd[1] && s_cmd->cmd[2])
-	{
-		ms_print(STDERR_FILENO, COLOR_RED, "cd: too many arguments");
-		return (255);
-	}
-	pwd = get_env("PWD");
-	if (s_cmd->cmd[1] == NULL)
+	if (arg == NULL)
 	{
 		path = get_env("HOME");
 		if (path == NULL)
 		{
 			free(pwd);
 			ms_print(STDERR_FILENO, COLOR_RED, "cd: HOME not set");
-			return (1);
+			return (NULL);
 		}
 	}
 	else
 	{
-		dirs = ft_split(s_cmd->cmd[1], '/');
+		dirs = ft_split(arg, '/');
 		path = make_absolute_path(dirs, ft_strdup(pwd));
 		kl_free_arr(dirs);
 	}
-	return (chdir_check(path, pwd, s_cmd->cmd[1]));
+	return (path);
+}
+
+int	cd_builtin(void *p)
+{
+	char	*pwd;
+	char	*path;
+	t_cmd	*s_cmd;
+
+	s_cmd = p;
+	if (s_cmd->cmd[1] && s_cmd->cmd[2])
+	{
+		ms_print(STDERR_FILENO, COLOR_RED, "cd: too many arguments");
+		return (255);
+	}
+	pwd = get_env("PWD");
+	path = get_path(s_cmd->cmd[1], pwd);
+	if (path == NULL)
+		return (1);
+	return (path_check(path, pwd, s_cmd->cmd[1]));
 }

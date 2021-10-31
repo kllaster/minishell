@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-void	check_path(char	**exec_file, t_cmd *s_cmd)
+static void	check_path(char	**exec_file, t_cmd *s_cmd)
 {
 	char	*tmp_path;
 	char	*tmp_path2;
@@ -17,12 +17,31 @@ void	check_path(char	**exec_file, t_cmd *s_cmd)
 	}
 }
 
+t_fbuiltin	is_builtin(char *str)
+{
+	if (kl_strcmp(str, "cd") == 0)
+		return (cd_builtin);
+	else if (kl_strcmp(str, "exit") == 0)
+		return (exit_builtin);
+	else if (kl_strcmp(str, "echo") == 0)
+		return (echo_builtin);
+	else if (kl_strcmp(str, "pwd") == 0)
+		return (pwd_builtin);
+	else if (kl_strcmp(str, "env") == 0)
+		return (env_builtin);
+	else if (kl_strcmp(str, "unset") == 0)
+		return (unset_builtin);
+	return (NULL);
+}
+
 int	check_cmd(t_cmd *s_cmd)
 {
-	char	*error;
 	char	**exec_file;
 	char	**exec_file_p;
 
+	s_cmd->fbuiltin = is_builtin(s_cmd->cmd[0]);
+	if (s_cmd->fbuiltin)
+		return (0);
 	exec_file_p = NULL;
 	if (ft_strchr(s_cmd->cmd[0], '/') != NULL)
 	{
@@ -39,9 +58,6 @@ int	check_cmd(t_cmd *s_cmd)
 	kl_free_arr(exec_file_p);
 	if (s_cmd->exec_file)
 		return (0);
-	error = kl_strjoin_free(ft_strdup(s_cmd->cmd[0]), ft_strdup(": "));
-	error = kl_strjoin_free(error, ft_strdup("command not found"));
-	ms_print(STDERR_FILENO, COLOR_RED, error);
-	free(error);
+	ms_print_cmd_error(s_cmd->cmd[0], "command not found");
 	return (1);
 }

@@ -40,3 +40,20 @@ void	ms_put_tag(void)
 	ft_putstr_fd(" ∞ ", STDERR_FILENO);
 	ft_putstr_fd(COLOR_RESET, STDERR_FILENO);
 }
+
+void	ms_put_heredoc(void)
+{
+	ft_putstr_fd(COLOR_BLUE, STDOUT_FILENO);
+	ft_putstr_fd("heredoc> ", STDOUT_FILENO);
+	ft_putstr_fd(COLOR_RESET, STDOUT_FILENO);
+}
+
+void	ms_print_cmd_error(char *cmd_name, char *error_str)
+{
+	char	*error;
+
+	error = kl_strjoin_free(ft_strdup(cmd_name), ft_strdup(": "));
+	error = kl_strjoin_free(error, ft_strdup(error_str));
+	ms_print(STDERR_FILENO, COLOR_RED, error);
+	free(error);
+}

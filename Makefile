@@ -2,14 +2,12 @@ NAME			= minishell
 CC				= gcc
 RM				= rm -f
 MKDIR			= mkdir -p
-DEBUG			= 1
+DEBUG			= 0
 ifeq ($(DEBUG), 1)
 	DEBUG_FLAGS	= -fsanitize=address -g
 else
-{
-	MAKEFLAGS = -j --output-sync=recurse --no-print-directory
-	DEBUG_FLAGS = -O2 -flto -D_FORTIFY_SOURCE=2 -fpie
-}
+	MAKEFLAGS	= -j --output-sync=recurse --no-print-directory
+	DEBUG_FLAGS	= -O2 -flto -D_FORTIFY_SOURCE=2 -fpie
 endif
 PROTECT_FLAGS	= -fno-exceptions -fstack-protector-all
 COMMON_FLAGS	= -std=c99 -Wall -Wextra -Werror -Wfloat-equal -MMD -pipe
@@ -30,15 +28,19 @@ LIBS			= ${LIBFT} ${GNL} -ltermcap
 SRCS			=	srcs/main.c\
 					srcs/loop.c\
 					srcs/lexer/lexer.c\
-					srcs/lexer/parse_lexemes.c\
-					srcs/lexer/sub_lexemes.c\
 					srcs/lexer/var_lexeme.c\
+					srcs/lexer/sub_lexemes.c\
+					srcs/lexer/parse_lexemes.c\
 					srcs/tokenizer/tokenizer.c\
 					srcs/tokenizer/sub_tokens.c\
+					srcs/tokenizer/prase_tokens.c\
+					srcs/tokenizer/logic_tokenizer.c\
 					srcs/exec/exec.c\
 					srcs/exec/check_cmd.c\
+					srcs/exec/exec_utils.c\
 					srcs/utils/env.c\
 					srcs/utils/ms_sub.c\
+					srcs/utils/cd_sub.c\
 					srcs/builtin/cd.c\
 					srcs/builtin/exit.c\
 					srcs/builtin/echo.c\

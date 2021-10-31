@@ -59,12 +59,9 @@ void	join_lexeme_str(t_lexeme *lexeme, t_dlst *dlts_item)
 t_dlst	*parse__var(t_lexeme *lexeme, t_dlst *dlts_item)
 {
 	t_dlst	*prev;
-	char	**new_envp;
 
 	prev = dlts_item->next;
-	new_envp = create_envp(g_envp, lexeme->str);
-	kl_free_arr(g_envp);
-	g_envp = new_envp;
+	g_envp = create_envp(g_envp, lexeme->str);
 	free_lexeme(lexeme);
 	dlst_remove_node(dlts_item);
 	return (prev);

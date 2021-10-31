@@ -15,5 +15,6 @@ int		g_exit_code;
 char	**g_envp;
 
 void	loop(void);
+void	run_cmds(t_dlst *tokens);
 
 #endif

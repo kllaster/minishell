@@ -1,13 +1,15 @@
 #include "minishell.h"
 
-int	unset_builtin(t_cmd *s_cmd)
+int	unset_builtin(void *p)
 {
 	int		a;
 	int		check_new;
 	char	**new_envp;
 	char	*key_name;
+	t_cmd	*s_cmd;
 
 	a = -1;
+	s_cmd = p;
 	while (s_cmd->cmd[++a])
 	{
 		key_name = kl_strjoin_free(ft_strdup(s_cmd->cmd[a]), ft_strdup("="));
