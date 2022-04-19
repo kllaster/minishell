@@ -50,22 +50,9 @@ static int	check_syntax(char *line)
 
 static void	parse_line(char *line)
 {
-	int		i;
-	char	**cmds;
-
 	line = ft_strtrim(line, "\t ");
 	if (line && check_syntax(line) == 0)
-	{
-		cmds = ft_split(line, ';');
-		i = -1;
-		while (cmds[++i])
-		{
-			run_line(cmds[i]);
-			if (g_exit)
-				break ;
-		}
-		kl_free_arr(cmds);
-	}
+		run_line(line);
 	free(line);
 }
 
