@@ -12,15 +12,15 @@ void	create_cmd(t_tokenizer *tknzer, t_dlst **tokens, char *str)
 		tknzer->cmd_now = kl_calloc(1, sizeof(t_cmd));
 		tknzer->cmd_now->fd[0] = STDIN_FILENO;
 		tknzer->cmd_now->fd[1] = STDOUT_FILENO;
-		ft_bzero(&tknzer->fd_edited, sizeof(int) * 2);
+		tknzer->fd_edited[0] = 0;
+		tknzer->fd_edited[1] = 0;
 		tknzer->stop_parse_str = 0;
 		if (tknzer->pipe)
 		{
 			tknzer->fd_edited[STDIN_FILENO] = 1;
 			tknzer->cmd_now->fd[STDIN_FILENO] = tknzer->fd_pipe[STDIN_FILENO];
-			tknzer->cmd_now->is_pipe = 1;
+			tknzer->pipe = 0;
 		}
-		tknzer->pipe = 0;
 	}
 	if (str)
 	{
@@ -42,20 +42,13 @@ int	redirect(int fd, int falgs, t_dlst *lexemes, t_tokenizer *tknzer)
 	return (-1);
 }
 
-int	heredoc(t_dlst *lexemes)
+int	heredoc(int fd, t_dlst *lexemes)
 {
-	int		fd;
 	char	*delimiter;
 
 	delimiter = get_filename(lexemes);
 	if (delimiter == NULL)
 		return (1);
-	fd = open(".heredoc", O_CREAT | O_WRONLY | O_TRUNC, 755);
-	if (fd == -1)
-	{
-		ms_print(STDERR_FILENO, COLOR_RED, "no such file .heredoc");
-		return (errno);
-	}
 	multiline_put_in_file(ms_put_heredoc, delimiter, fd);
 	close(fd);
 	return (0);

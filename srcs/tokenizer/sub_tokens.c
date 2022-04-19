@@ -28,11 +28,11 @@ int	add_fd(t_tokenizer *tknzer, int fd, char *file, int flags)
 		{
 			error = kl_strjoin_free(ft_strdup("no such file or directory: "),
 					ft_strdup(file));
+			ms_print(STDERR_FILENO, COLOR_RED, error);
+			free(error);
 		}
 		else
-			error = ft_strdup(strerror(errno));
-		ms_print(STDERR_FILENO, COLOR_RED, error);
-		free(error);
+			ms_print_cmd_error("open()", strerror(errno));
 		return (errno);
 	}
 	if (tknzer->fd_edited[fd])
@@ -66,7 +66,7 @@ void	multiline_put_in_file(void print_tag(void), char *delimiter, int fd)
 
 	line = kl_malloc(sizeof(char **));
 	print_tag();
-	while (get_next_line(0, line) > 0)
+	while (get_next_line(STDIN_FILENO, line) > 0)
 	{
 		if (**line != '\0' && kl_strcmp(*line, delimiter) == 0)
 			break ;
@@ -75,7 +75,8 @@ void	multiline_put_in_file(void print_tag(void), char *delimiter, int fd)
 		free(*line);
 		print_tag();
 	}
-	free(*line);
+	if (*line)
+		free(*line);
 	free(line);
 }
 
@@ -95,5 +96,4 @@ void	free_tokenizer(t_dlst **tokens, t_dlst *lexemes, t_tokenizer *tknzer)
 	free(tokens);
 	if (tknzer->cmd_now)
 		free(tknzer->cmd_now);
-	free(tknzer);
 }

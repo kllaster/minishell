@@ -6,12 +6,11 @@ static int	tokenize__logic_pipe(t_tokenizer *tknzer)
 	tknzer->stop_parse_str = 1;
 	if (pipe(tknzer->fd_pipe) == -1)
 	{
-		ms_print(STDERR_FILENO, COLOR_RED, "error: creating pipe");
+		ms_print_cmd_error("pipe()", strerror(errno));
 		return (4);
 	}
 	tknzer->fd_edited[STDOUT_FILENO] = 1;
 	tknzer->cmd_now->fd[STDOUT_FILENO] = tknzer->fd_pipe[STDOUT_FILENO];
-	tknzer->cmd_now->is_pipe = 1;
 	return (0);
 }
 
@@ -34,11 +33,31 @@ static int	tokenize__logic_str(t_dlst **tokens, t_dlst *lexemes,
 
 static int	tokenize__logic_heredoc(t_dlst *lexemes, t_tokenizer *tknzer)
 {
+	pid_t	pid;
+	int		fd_pipe[2];
+
 	tknzer->stop_parse_str = 1;
-	if (heredoc(lexemes) != 0)
-		return (1);
-	if (add_fd(tknzer, STDIN_FILENO, ".heredoc", O_RDONLY) != 0)
-		return (2);
+	if (pipe(fd_pipe) == -1)
+	{
+		ms_print_cmd_error("pipe()", strerror(errno));
+		return (errno);
+	}
+	pid = fork();
+	if (pid < 0)
+	{
+		ms_print_cmd_error("fork()", strerror(errno));
+		return (errno);
+	}
+	else if (pid == 0)
+		exit(heredoc(fd_pipe[STDOUT_FILENO], lexemes));
+	pid = wait_process(pid);
+	close(fd_pipe[STDOUT_FILENO]);
+	tknzer->cmd_now->fd[STDIN_FILENO] = fd_pipe[STDIN_FILENO];
+	if (pid != 0)
+	{
+		ms_print_cmd_error("process error", strerror(pid));
+		return (errno);
+	}
 	return (-1);
 }
 

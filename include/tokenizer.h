@@ -9,8 +9,6 @@ typedef struct s_cmd
 {
 	pid_t			pid;
 	int				fd[2];
-	int				is_pipe;
-	int				error;
 	char			*exec_file;
 	char			**cmd;
 	t_fbuiltin		fbuiltin;
@@ -31,7 +29,7 @@ void	multiline_put_in_file(void print_tag(void), char *delimiter, int fd);
 void	free_tokenizer(t_dlst **tokens, t_dlst *lexemes, t_tokenizer *tknzer);
 char	*get_filename(t_dlst *lexemes);
 int		check_cmd(t_cmd *s_cmd);
-int		heredoc(t_dlst *lexemes);
+int		heredoc(int fd, t_dlst *lexemes);
 int		add_fd(t_tokenizer *tknzer, int fd, char *file, int flags);
 int		redirect(int fd, int falgs, t_dlst *lexemes, t_tokenizer *tknzer);
 int		tokenize__logic(t_dlst **tokens, t_dlst *lexemes, t_tokenizer *tknzer);

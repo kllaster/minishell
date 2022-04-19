@@ -7,6 +7,7 @@ typedef struct s_list_var
 	void		*var2;
 }				t_list_var;
 
+int		wait_process(pid_t pid);
 int		dup_fd(int fd_new, int fd_old);
 
 void	ms_print_cmd_error(char *cmd_name, char *error_str);
