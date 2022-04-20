@@ -1,8 +1,8 @@
 #include "minishell.h"
 
-int	wait_process(pid_t pid)
+int wait_process(pid_t pid)
 {
-	int		status;
+	int status;
 
 	waitpid(pid, &status, WUNTRACED);
 	if (WIFEXITED(status))
@@ -12,7 +12,7 @@ int	wait_process(pid_t pid)
 	return (0);
 }
 
-int	dup_fd(int fd_new, int fd_old)
+int dup_fd(int fd_new, int fd_old)
 {
 	if (fd_new != fd_old && dup2(fd_new, fd_old) == -1)
 		return (errno);

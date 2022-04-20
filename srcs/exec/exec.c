@@ -20,10 +20,6 @@ static int wait_cmd(t_cmd* s_cmd)
 
 static int exec_cmd(t_cmd* s_cmd)
 {
-	int saved_fd[2];
-
-	saved_fd[0] = dup(0);
-	saved_fd[1] = dup(1);
 	if (dup_fd(s_cmd->fd[0], STDIN_FILENO) != 0)
 		return (errno);
 	if (dup_fd(s_cmd->fd[1], STDOUT_FILENO) != 0)
@@ -32,11 +28,6 @@ static int exec_cmd(t_cmd* s_cmd)
 	if (s_cmd->fbuiltin)
 		return (s_cmd->fbuiltin(s_cmd));
 	else if (execve(s_cmd->exec_file, s_cmd->cmd, g_envp) == -1)
-		return (errno);
-
-	if (dup_fd(saved_fd[0], STDIN_FILENO) != 0)
-		return (errno);
-	if (dup_fd(saved_fd[1], STDOUT_FILENO) != 0)
 		return (errno);
 	return (0);
 }
@@ -55,12 +46,7 @@ static int exec_cmd_fork(t_cmd* s_cmd)
 		exit(exec_cmd(s_cmd));
 
 	error = wait_cmd(s_cmd);
-	if (error != 0)
-	{
-		ms_print_cmd_error(s_cmd->cmd[0], strerror(error));
-		return (errno);
-	}
-	return (0);
+	return (error);
 }
 
 static int call_cmd(t_cmd* s_cmd)

@@ -92,8 +92,11 @@ void	free_tokenizer(t_dlst **tokens, t_dlst *lexemes, t_tokenizer *tknzer)
 		dlst_loop(*tokens);
 		dlst_map(*tokens, free_cmd);
 		dlst_free(*tokens);
+		*tokens = NULL;
 	}
-	free(tokens);
 	if (tknzer->cmd_now)
+	{
 		free(tknzer->cmd_now);
+		tknzer->cmd_now = NULL;
+	}
 }
