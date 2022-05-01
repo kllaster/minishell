@@ -14,6 +14,7 @@ void	ms_print_cmd_error(char *cmd_name, char *error_str);
 void	ms_print_lexemes(t_dlst *dlst_item);
 void	ms_put_heredoc(void);
 void	ms_put_tag(void);
+void	ms_print_welcome(void);
 void	ms_print(int fd, char *color, char *str);
 
 #endif

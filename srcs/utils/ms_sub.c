@@ -1,17 +1,16 @@
 #include "minishell.h"
 
-void	ms_print(int fd, char *color, char *str)
+void ms_print(int fd, char* color, char* str)
 {
 	ft_putstr_fd("minishell: ", fd);
 	ft_putstr_fd(color, fd);
 	ft_putstr_fd(str, fd);
-	ft_putstr_fd("\n", fd);
-	ft_putstr_fd(COLOR_RESET, fd);
+	ft_putstr_fd("\n" COLOR_RESET, fd);
 }
 
-void	ms_print_lexemes(t_dlst *dlst_item)
+void ms_print_lexemes(t_dlst* dlst_item)
 {
-	t_lexeme	*lexeme;
+	t_lexeme* lexeme;
 
 	while (dlst_item)
 	{
@@ -30,30 +29,40 @@ void	ms_print_lexemes(t_dlst *dlst_item)
 	}
 }
 
-void	ms_put_tag(void)
+void ms_put_tag(void)
 {
-	ft_putstr_fd(COLOR_RED_B, STDERR_FILENO);
-	ft_putstr_fd("ϟ ", STDERR_FILENO);
-	ft_putstr_fd(COLOR_CYAN_B, STDERR_FILENO);
-	ft_putstr_fd("minishell", STDERR_FILENO);
-	ft_putstr_fd(COLOR_YELLOW_B, STDERR_FILENO);
-	ft_putstr_fd(" ∞ ", STDERR_FILENO);
-	ft_putstr_fd(COLOR_RESET, STDERR_FILENO);
+	ft_putstr_fd(COLOR_RED_B "ϟ "
+	             COLOR_CYAN_B "minishell"
+	             COLOR_YELLOW_B " ∞ " COLOR_RESET,
+		STDOUT_FILENO);
 }
 
-void	ms_put_heredoc(void)
+void ms_put_heredoc(void)
 {
-	ft_putstr_fd(COLOR_BLUE, STDOUT_FILENO);
-	ft_putstr_fd("heredoc> ", STDOUT_FILENO);
-	ft_putstr_fd(COLOR_RESET, STDOUT_FILENO);
+	ft_putstr_fd(COLOR_BLUE "heredoc> " COLOR_RESET, STDOUT_FILENO);
 }
 
-void	ms_print_cmd_error(char *cmd_name, char *error_str)
+void ms_print_cmd_error(char* cmd_name, char* error_str)
 {
-	char	*error;
+	char* error;
 
 	error = kl_strjoin_free(ft_strdup(cmd_name), ft_strdup(" - "));
 	error = kl_strjoin_free(error, ft_strdup(error_str));
 	ms_print(STDERR_FILENO, COLOR_RED, error);
 	free(error);
+}
+
+void ms_print_welcome()
+{
+	ft_putstr_fd(COLOR_YELLOW_B
+	             "\n"
+	             "███╗   ███╗ ██╗ ███╗   ██╗ ██╗ ███████╗ ██╗  ██╗ ███████╗ ██╗      ██╗     \n"
+	             "████╗ ████║ ██║ ████╗  ██║ ██║ ██╔════╝ ██║  ██║ ██╔════╝ ██║      ██║     \n"
+	             "██╔████╔██║ ██║ ██╔██╗ ██║ ██║ ███████╗ ███████║ █████╗   ██║      ██║     \n"
+	             "██║╚██╔╝██║ ██║ ██║╚██╗██║ ██║ ╚════██║ ██╔══██║ ██╔══╝   ██║      ██║     \n"
+	             "██║ ╚═╝ ██║ ██║ ██║ ╚████║ ██║ ███████║ ██║  ██║ ███████╗ ███████╗ ███████╗\n"
+	             "╚═╝     ╚═╝ ╚═╝ ╚═╝  ╚═══╝ ╚═╝ ╚══════╝ ╚═╝  ╚═╝ ╚══════╝ ╚══════╝ ╚══════╝\n\n"
+	             "The default interactive shell is now minishell.\n"
+	             COLOR_RESET,
+		STDOUT_FILENO);
 }

@@ -3,12 +3,14 @@ CC				= gcc
 RM				= rm -f
 MKDIR			= mkdir -p
 DEBUG			= 0
+
 ifeq ($(DEBUG), 1)
 	DEBUG_FLAGS	= -fsanitize=address -g
 else
 	MAKEFLAGS	= -j --output-sync=recurse --no-print-directory
 	DEBUG_FLAGS	= -O2 -flto -D_FORTIFY_SOURCE=2 -fpie
 endif
+
 PROTECT_FLAGS	= -fno-exceptions -fstack-protector-all
 COMMON_FLAGS	= -std=c99 -Wall -Wextra -Werror -Wfloat-equal -MMD -pipe
 CFLAGS			= $(COMMON_FLAGS) $(DEBUG_FLAGS) $(PROTECT_FLAGS)
@@ -23,7 +25,7 @@ GNL				= ${GNL_DIR}/bin/get_next_line.a
 LIBFT_DIR		= import/libft
 LIBFT			= ${LIBFT_DIR}/bin/libft.a
 
-LIBS			= ${LIBFT} ${GNL} -ltermcap
+LIBS			= ${LIBFT} ${GNL}
 
 SRCS			=	srcs/main.c\
 					srcs/loop.c\
@@ -75,18 +77,13 @@ clean:
 				cd import/get_next_line && $(MAKE) clean
 				cd import/libft && $(MAKE) clean
 
-fclean:
-				$(RM) $(OBJS)
-				$(RM) $(DEPS)
-				cd import/get_next_line && $(MAKE) fclean
-				cd import/libft && $(MAKE) fclean
+fclean:			clean
+				$(RM) -rd $(BUILD_DIR)
 				$(RM) $(NAME)
 
 re:
 				$(MAKE) fclean
 				$(MAKE) all
 
-ifeq ($(findstring $(MAKECMDGOALS), clean fclean re),)
-	-include $(DEPS)
-endif
+-include $(DEPS)
 .PHONY:			all, clean, fclean, re
