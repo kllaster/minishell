@@ -42,8 +42,7 @@ int	check_new_env(char **envp, char *item)
 	return (check_new);
 }
 
-static char	**put_envp(char **envp, char **new_envp,
-					int check_new, char *item)
+static char	**put_envp(char **envp, char **new_envp, int check_new, char *item)
 {
 	int	i;
 

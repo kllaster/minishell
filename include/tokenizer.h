@@ -30,7 +30,7 @@ char	*get_filename(t_dlst *lexemes);
 int		check_cmd(t_cmd *s_cmd);
 int		heredoc(int fd, t_dlst *lexemes);
 int		add_fd(t_tokenizer *tknzer, int fd, char *file, int flags);
-int		redirect(int fd, int falgs, t_dlst *lexemes, t_tokenizer *tknzer);
+int		redirect(int fd, int flags, t_dlst *lexemes, t_tokenizer *tknzer);
 int		tokenize__logic(t_dlst **tokens, t_dlst *lexemes, t_tokenizer *tknzer);
 t_dlst	*tokenize(t_dlst *lexemes);
 

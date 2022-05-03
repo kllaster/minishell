@@ -5,14 +5,14 @@ static int	parse_lexeme_other(t_dlst **lexemes, const char *line, int i)
 	if (line[i] == R_REDIR)
 	{
 		if (line[i + 1] && line[i + 1] == R_REDIR)
-			i = parse__operator(lexemes, i + 1, R_HEREDOC);
+			i = parse__operator(lexemes, i + 1, DR_REDIR);
 		else
 			i = parse__operator(lexemes, i, R_REDIR);
 	}
 	else if (line[i] == L_REDIR)
 	{
 		if (line[i + 1] && line[i + 1] == L_REDIR)
-			i = parse__operator(lexemes, i + 1, L_HEREDOC);
+			i = parse__operator(lexemes, i + 1, DL_REDIR);
 		else
 			i = parse__operator(lexemes, i, L_REDIR);
 	}

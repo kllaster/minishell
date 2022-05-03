@@ -32,8 +32,8 @@ int	parse__spaces(t_dlst **lexemes, const char *line, int i)
 	if (*lexemes != NULL)
 		type = ((t_lexeme *)(*lexemes)->content)->type;
 	if (line[i] && type != 0 && type != PIPE
-		&& type != R_REDIR && type != R_HEREDOC
-		&& type != L_REDIR && type != L_HEREDOC)
+		&& type != R_REDIR && type != DR_REDIR
+		&& type != L_REDIR && type != DL_REDIR)
 	{
 		lexeme = new_lexeme(SPACE, NULL);
 		dlst_add_front(lexemes, dlst_new(lexeme));
@@ -77,8 +77,7 @@ void	parse__dquote(t_dlst **lexemes, const char *line, int start, int end)
 	if (start_var != -1 && start_var < end)
 		lexeme = join_var(kl_strdup_len(&line[start], end - start), start_var);
 	else
-		lexeme = new_lexeme(STR,
-				kl_strdup_len(&line[start], end - start));
+		lexeme = new_lexeme(STR, kl_strdup_len(&line[start], end - start));
 	dlst_add_front(lexemes, dlst_new(lexeme));
 }
 

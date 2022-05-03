@@ -29,7 +29,7 @@ void	create_cmd(t_tokenizer *tknzer, t_dlst **tokens, char *str)
 	}
 }
 
-int	redirect(int fd, int falgs, t_dlst *lexemes, t_tokenizer *tknzer)
+int	redirect(int fd, int flags, t_dlst *lexemes, t_tokenizer *tknzer)
 {
 	char	*file;
 
@@ -37,7 +37,7 @@ int	redirect(int fd, int falgs, t_dlst *lexemes, t_tokenizer *tknzer)
 	file = get_filename(lexemes);
 	if (file == NULL)
 		return (1);
-	if (add_fd(tknzer, fd, file, falgs) != 0)
+	if (add_fd(tknzer, fd, file, flags) != 0)
 		return (2);
 	return (-1);
 }

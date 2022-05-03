@@ -12,8 +12,8 @@ typedef enum e_operators
 	D_QUOTE = '"',
 	L_REDIR = '<',
 	R_REDIR = '>',
-	L_HEREDOC = 'L',
-	R_HEREDOC = 'R',
+	DL_REDIR = 'L',
+	DR_REDIR = 'R',
 	PIPE	= '|',
 	STR		= 'S'
 }			t_operator;
