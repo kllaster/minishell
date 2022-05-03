@@ -36,13 +36,14 @@ SRCS			=	srcs/main.c\
 					srcs/tokenizer/tokenizer.c\
 					srcs/tokenizer/sub_tokens.c\
 					srcs/tokenizer/prase_tokens.c\
-					srcs/tokenizer/logic_tokenizer.c\
+					srcs/tokenizer/tokenize_logic.c\
 					srcs/exec/exec.c\
 					srcs/exec/check_cmd.c\
 					srcs/exec/exec_utils.c\
 					srcs/utils/env.c\
 					srcs/utils/ms_sub.c\
 					srcs/utils/cd_sub.c\
+					srcs/utils/signal.c\
 					srcs/builtin/cd.c\
 					srcs/builtin/exit.c\
 					srcs/builtin/echo.c\

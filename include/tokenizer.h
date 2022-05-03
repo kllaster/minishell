@@ -7,7 +7,6 @@ typedef int	(*t_fbuiltin)(void *);
 
 typedef struct s_cmd
 {
-	pid_t			pid;
 	int				fd[2];
 	char			*exec_file;
 	char			**cmd;

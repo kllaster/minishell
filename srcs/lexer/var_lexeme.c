@@ -53,7 +53,10 @@ static char	*join_var_str(char *str, int end_var, char *res)
 
 	end_symb = str[end_var];
 	str[end_var] = '\0';
-	value = get_env(str);
+	if (str[0] == '?' && str[1] == '\0')
+		value = ft_itoa(get_shell_pcode());
+	else
+		value = get_env(str);
 	if (value)
 		res = kl_strjoin_free(res, value);
 	str[end_var] = end_symb;

@@ -30,20 +30,23 @@ static int exec_cmd(t_cmd* s_cmd)
 
 static int exec_cmd_fork(t_cmd* s_cmd)
 {
-	int error;
+	int     code;
+	pid_t   pid;
 
-	s_cmd->pid = fork();
-	if (s_cmd->pid < 0)
+	pid = fork();
+	set_shell_pid(pid);
+	if (pid < 0)
 	{
 		ms_print_cmd_error("fork()", strerror(errno));
 		return (errno);
 	}
-	else if (s_cmd->pid == 0)
+	else if (pid == 0)
 		exit(exec_cmd(s_cmd));
 
-	error = wait_process(s_cmd->pid);
+	code = wait_process(pid);
+	set_shell_pid(0);
 	close_cmd_fd(s_cmd);
-	return (error);
+	return (code);
 }
 
 static int call_cmd(t_cmd* s_cmd)
@@ -52,20 +55,23 @@ static int call_cmd(t_cmd* s_cmd)
 	int saved_fd[2];
 
 	if (check_cmd(s_cmd) == 1)
+	{
+		set_shell_pcode(127);
 		return (1);
+	}
 	if (s_cmd->fbuiltin)
 	{
 		if (s_cmd->fbuiltin == exit_builtin)
 		{
-			g_exit = 1;
-			g_exit_code = s_cmd->fbuiltin(s_cmd);
-			res = 1;
+			set_shell_exit(s_cmd->fbuiltin(s_cmd));
+			return (1);
 		}
 		else
 		{
 			saved_fd[0] = dup(0);
 			saved_fd[1] = dup(1);
 			res = exec_cmd(s_cmd);
+			set_shell_pcode(res);
 			close_cmd_fd(s_cmd);
 			if (dup_fd(saved_fd[0], STDIN_FILENO) != 0)
 				return (errno);
@@ -74,7 +80,13 @@ static int call_cmd(t_cmd* s_cmd)
 		}
 	}
 	else
+	{
 		res = exec_cmd_fork(s_cmd);
+		if (!shell_pcode_is_signal())
+			set_shell_pcode(res);
+		else
+			set_shell_is_signal(0);
+	}
 	return (res);
 }
 

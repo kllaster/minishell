@@ -62,7 +62,7 @@ void	loop(void)
 
 	line = kl_malloc(sizeof(char *));
 	ms_put_tag();
-	while (get_next_line(0, line) > 0)
+	while (get_next_line(STDIN_FILENO, line) > 0)
 	{
 		if (**line == '\0')
 		{
@@ -72,7 +72,7 @@ void	loop(void)
 		}
 		parse_line(*line);
 		free(*line);
-		if (g_exit)
+		if (get_shell_exit())
 			break ;
 		ms_put_tag();
 	}
