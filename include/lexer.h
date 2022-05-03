@@ -5,17 +5,18 @@
 
 typedef enum e_operators
 {
-	VAR		= '$',
-	SET_VAR	= '=',
-	SPACE	= ' ',
-	S_QUOTE	= '\'',
-	D_QUOTE = '"',
-	L_REDIR = '<',
-	R_REDIR = '>',
-	DL_REDIR = 'L',
-	DR_REDIR = 'R',
-	PIPE	= '|',
-	STR		= 'S'
+	VAR		  = '$',
+	SET_VAR	  = '=',
+	SPACE	  = ' ',
+	S_QUOTE	  = '\'',
+	D_QUOTE   = '"',
+	L_REDIR   = '<',
+	R_REDIR   = '>',
+	DL_REDIR  = 'L',
+	DR_REDIR  = 'R',
+	SEMICOLON = ';',
+	PIPE	  = '|',
+	STR		  = 'S'
 }			t_operator;
 
 typedef struct s_join_var

@@ -1,5 +1,11 @@
 #include "minishell.h"
 
+static int	tokenize__logic_semicolon(t_tokenizer *tknzer)
+{
+	tknzer->stop_parse_str = 1;
+	return (0);
+}
+
 static int	tokenize__logic_pipe(t_tokenizer *tknzer)
 {
 	tknzer->cmd_now->is_piped = 1;
@@ -77,5 +83,7 @@ int	tokenize__logic(t_dlst **tokens, t_dlst *lexemes, t_tokenizer *tknzer)
 		return (tokenize__logic_str(tokens, lexemes, tknzer));
 	else if (lexeme_type == PIPE)
 		return (tokenize__logic_pipe(tknzer));
+	else if (lexeme_type == SEMICOLON)
+		return (tokenize__logic_semicolon(tknzer));
 	return (3);
 }

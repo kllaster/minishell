@@ -33,7 +33,8 @@ int	parse__spaces(t_dlst **lexemes, const char *line, int i)
 		type = ((t_lexeme *)(*lexemes)->content)->type;
 	if (line[i] && type != 0 && type != PIPE
 		&& type != R_REDIR && type != DR_REDIR
-		&& type != L_REDIR && type != DL_REDIR)
+		&& type != L_REDIR && type != DL_REDIR
+		&& type != SEMICOLON)
 	{
 		lexeme = new_lexeme(SPACE, NULL);
 		dlst_add_front(lexemes, dlst_new(lexeme));
@@ -52,7 +53,8 @@ int	parse__str(t_dlst **lexemes, const char *line, int i)
 	{
 		if (line[i] == S_QUOTE || line[i] == D_QUOTE
 			|| line[i] == SPACE || line[i] == PIPE
-			|| line[i] == L_REDIR || line[i] == R_REDIR)
+			|| line[i] == L_REDIR || line[i] == R_REDIR
+			|| line[i] == SEMICOLON)
 			break ;
 	}
 	str = kl_strdup_len(&line[start], (i - start));

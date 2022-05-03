@@ -40,6 +40,8 @@ t_dlst	*parse_lexemes(char *line)
 			i = parse__quote(lexemes, line, i, D_QUOTE);
 		else if (line[i] == PIPE)
 			i = parse__operator(lexemes, i, PIPE);
+		else if (line[i] == SEMICOLON)
+			i = parse__operator(lexemes, i, SEMICOLON);
 		else
 			i = parse_lexeme_other(lexemes, line, i);
 	}
