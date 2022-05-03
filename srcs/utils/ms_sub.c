@@ -15,16 +15,16 @@ void ms_print_lexemes(t_dlst* dlst_item)
 	while (dlst_item)
 	{
 		lexeme = dlst_item->content;
-		ft_putstr_fd("---> ", STDOUT_FILENO);
-		ft_putchar_fd(lexeme->type, STDOUT_FILENO);
-		ft_putstr_fd(" <---> ", STDOUT_FILENO);
-		ft_putstr_fd("\\", STDOUT_FILENO);
+		ft_putstr_fd("---> ", STDERR_FILENO);
+		ft_putchar_fd(lexeme->type, STDERR_FILENO);
+		ft_putstr_fd(" <---> ", STDERR_FILENO);
+		ft_putstr_fd("\\", STDERR_FILENO);
 		if (lexeme->str)
-			ft_putstr_fd(lexeme->str, STDOUT_FILENO);
+			ft_putstr_fd(lexeme->str, STDERR_FILENO);
 		else
-			ft_putchar_fd(lexeme->type, STDOUT_FILENO);
-		ft_putstr_fd("/", STDOUT_FILENO);
-		ft_putchar_fd('\n', STDOUT_FILENO);
+			ft_putchar_fd(lexeme->type, STDERR_FILENO);
+		ft_putstr_fd("/", STDERR_FILENO);
+		ft_putchar_fd('\n', STDERR_FILENO);
 		dlst_item = dlst_item->prev;
 	}
 }
@@ -34,12 +34,12 @@ void ms_put_tag(void)
 	ft_putstr_fd(COLOR_RED_B "ϟ "
 	             COLOR_CYAN_B "minishell"
 	             COLOR_YELLOW_B " ∞ " COLOR_RESET,
-		STDOUT_FILENO);
+		STDERR_FILENO);
 }
 
 void ms_put_heredoc(void)
 {
-	ft_putstr_fd(COLOR_BLUE "heredoc> " COLOR_RESET, STDOUT_FILENO);
+	ft_putstr_fd(COLOR_BLUE "heredoc> " COLOR_RESET, STDERR_FILENO);
 }
 
 void ms_print_cmd_error(char* cmd_name, char* error_str)
@@ -64,5 +64,5 @@ void ms_print_welcome()
 	             "╚═╝     ╚═╝ ╚═╝ ╚═╝  ╚═══╝ ╚═╝ ╚══════╝ ╚═╝  ╚═╝ ╚══════╝ ╚══════╝ ╚══════╝\n\n"
 	             "The default interactive shell is now minishell.\n"
 	             COLOR_RESET,
-		STDOUT_FILENO);
+		STDERR_FILENO);
 }

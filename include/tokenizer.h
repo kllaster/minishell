@@ -7,6 +7,9 @@ typedef int	(*t_fbuiltin)(void *);
 
 typedef struct s_cmd
 {
+	int             is_piped;
+	int             pipe_fd;
+	int             return_pipe_fd;
 	int				fd[2];
 	char			*exec_file;
 	char			**cmd;

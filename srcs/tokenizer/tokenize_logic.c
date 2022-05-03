@@ -2,15 +2,8 @@
 
 static int	tokenize__logic_pipe(t_tokenizer *tknzer)
 {
-	tknzer->pipe = 1;
+	tknzer->cmd_now->is_piped = 1;
 	tknzer->stop_parse_str = 1;
-	if (pipe(tknzer->fd_pipe) == -1)
-	{
-		ms_print_cmd_error("pipe()", strerror(errno));
-		return (4);
-	}
-	tknzer->fd_edited[STDOUT_FILENO] = 1;
-	tknzer->cmd_now->fd[STDOUT_FILENO] = tknzer->fd_pipe[STDOUT_FILENO];
 	return (0);
 }
 

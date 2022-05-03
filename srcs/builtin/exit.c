@@ -30,9 +30,9 @@ int	exit_builtin(void *p)
 			if (!ft_isdigit(s_cmd->cmd[1][i]))
 				return (error_output(s_cmd->cmd[1]));
 		}
-		ft_putstr_fd("exit\n", STDOUT_FILENO);
+		ft_putstr_fd("exit\n", STDERR_FILENO);
 		return (ft_atoi(s_cmd->cmd[1]));
 	}
-	ft_putstr_fd("exit\n", STDOUT_FILENO);
+	ft_putstr_fd("exit\n", STDERR_FILENO);
 	return (0);
 }

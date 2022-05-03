@@ -1,9 +1,11 @@
 #include "minishell.h"
 
-int	main(int argc, char **argv, char **envp)
+int main(int argc, char** argv, char** envp)
 {
 	(void)argc;
 	(void)argv;
+	if (read(0, NULL, 0) == -1)
+		return (0);
 	init_shell();
 	signal(SIGINT, &signal_int);
 	signal(SIGQUIT, &signal_quit);

@@ -1,9 +1,9 @@
 #include "minishell.h"
 
-static void	check_path(char	**exec_file, t_cmd *s_cmd)
+static void check_path(char** exec_file, t_cmd* s_cmd)
 {
-	char	*tmp_path;
-	char	*tmp_path2;
+	char* tmp_path;
+	char* tmp_path2;
 
 	while (s_cmd->exec_file == NULL && exec_file && *exec_file)
 	{
@@ -17,7 +17,7 @@ static void	check_path(char	**exec_file, t_cmd *s_cmd)
 	}
 }
 
-t_fbuiltin	is_builtin(char *str)
+t_fbuiltin is_builtin(char* str)
 {
 	if (kl_strcmp(str, "cd") == 0)
 		return (cd_builtin);
@@ -34,10 +34,11 @@ t_fbuiltin	is_builtin(char *str)
 	return (NULL);
 }
 
-int	check_cmd(t_cmd *s_cmd)
+int check_cmd(t_cmd* s_cmd)
 {
-	char	**exec_file;
-	char	**exec_file_p;
+	char* env_path;
+	char** exec_file;
+	char** exec_file_p;
 
 	s_cmd->fbuiltin = is_builtin(s_cmd->cmd[0]);
 	if (s_cmd->fbuiltin)
@@ -52,7 +53,11 @@ int	check_cmd(t_cmd *s_cmd)
 		return (0);
 	}
 	if (g_envp)
-		exec_file_p = ft_split(get_env("PATH"), ':');
+	{
+		env_path = get_env("PATH");
+		exec_file_p = ft_split(env_path, ':');
+		free(env_path);
+	}
 	exec_file = exec_file_p;
 	check_path(exec_file, s_cmd);
 	kl_free_arr(exec_file_p);
