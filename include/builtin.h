@@ -10,6 +10,6 @@ int		pwd_builtin(void *s_cmd);
 int		env_builtin(void *s_cmd);
 int		unset_builtin(void *s_cmd);
 
-char	*make_absolute_path(char **dirs, char *pwd);
+char    *get_working_directory();
 
 #endif

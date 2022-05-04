@@ -1,57 +1,92 @@
 #include "minishell.h"
 
-static int	path_check(char *path, char *pwd, char *arg)
+char *get_working_directory()
 {
-	int		res;
-	char	*env;
-	char	*error;
+	char *path;
 
-	res = chdir(path);
-	if (res != 0)
+	path = kl_malloc(PATH_MAX);
+	return getcwd(path, PATH_MAX);
+}
+
+int change_dir(char *path)
+{
+	char *env;
+	char *error;
+	char *oldpwd;
+
+	oldpwd = get_working_directory();
+	if (oldpwd == NULL)
 	{
-		error = kl_strjoin_free(ft_strdup(arg), ft_strdup(": "));
+		error = ft_strjoin(path, ": ");
 		error = kl_strjoin_free(error, ft_strdup(strerror(errno)));
 		ms_print_cmd_error("cd", error);
 		free(error);
-		return (res);
+		return (1);
 	}
-	env = kl_strjoin_free(ft_strdup("OLDPWD="), pwd);
+
+	if (chdir(path) == -1)
+	{
+		error = ft_strjoin(path, ": ");
+		error = kl_strjoin_free(error, ft_strdup(strerror(errno)));
+		ms_print_cmd_error("cd", error);
+		free(oldpwd);
+		free(error);
+		return (1);
+	}
+
+	env = kl_strjoin_free(ft_strdup("OLDPWD="), oldpwd);
 	g_envp = create_envp(g_envp, env);
 	free(env);
-	env = kl_strjoin_free(ft_strdup("PWD="), path);
+
+	path = get_working_directory();
+	if (path == NULL)
+	{
+		error = kl_strjoin_free(path, ft_strdup(": "));
+		error = kl_strjoin_free(error, ft_strdup(strerror(errno)));
+		ms_print_cmd_error("cd", error);
+		free(error);
+		return (1);
+	}
+	env = ft_strjoin("PWD=", path);
 	g_envp = create_envp(g_envp, env);
 	free(env);
+	return (0);
+}
+
+int cd_to_home()
+{
+	int res;
+	char *path;
+
+	path = get_env("HOME");
+	if (path == NULL)
+	{
+		ms_print(STDERR_FILENO, COLOR_RED, "cd: HOME not set");
+		return (1);
+	}
+	res = change_dir(path);
+	free(path);
 	return (res);
 }
 
-static char	*get_path(char *arg, char *pwd)
+int cd_to_old()
 {
-	char	*path;
-	char	**dirs;
+	int res;
+	char *path;
 
-	if (arg == NULL)
+	path = get_env("OLDPWD");
+	if (path == NULL)
 	{
-		path = get_env("HOME");
-		if (path == NULL)
-		{
-			free(pwd);
-			ms_print(STDERR_FILENO, COLOR_RED, "cd: HOME not set");
-			return (NULL);
-		}
+		ms_print(STDERR_FILENO, COLOR_RED, "cd: OLDPWD not set");
+		return (1);
 	}
-	else
-	{
-		dirs = ft_split(arg, '/');
-		path = make_absolute_path(dirs, ft_strdup(pwd));
-		kl_free_arr(dirs);
-	}
-	return (path);
+	res = change_dir(path);
+	free(path);
+	return (res);
 }
 
 int	cd_builtin(void *p)
 {
-	char	*pwd;
-	char	*path;
 	t_cmd	*s_cmd;
 
 	s_cmd = p;
@@ -60,9 +95,9 @@ int	cd_builtin(void *p)
 		ms_print(STDERR_FILENO, COLOR_RED, "cd: too many arguments");
 		return (255);
 	}
-	pwd = get_env("PWD");
-	path = get_path(s_cmd->cmd[1], pwd);
-	if (path == NULL)
-		return (1);
-	return (path_check(path, pwd, s_cmd->cmd[1]));
+	if (s_cmd->cmd[1] == NULL || kl_strcmp(s_cmd->cmd[1], "~") == 0)
+		return (cd_to_home());
+	else if (kl_strcmp(s_cmd->cmd[1], "-") == 0)
+		return (cd_to_old());
+	return change_dir(s_cmd->cmd[1]);
 }

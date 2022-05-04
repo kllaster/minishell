@@ -42,7 +42,6 @@ SRCS			=	srcs/main.c\
 					srcs/exec/exec_utils.c\
 					srcs/utils/env.c\
 					srcs/utils/ms_sub.c\
-					srcs/utils/cd_sub.c\
 					srcs/utils/signal.c\
 					srcs/builtin/cd.c\
 					srcs/builtin/exit.c\
