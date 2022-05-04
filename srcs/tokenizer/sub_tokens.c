@@ -16,33 +16,44 @@ void	free_cmd(void *p)
 	free(s_cmd);
 }
 
-int	add_fd(t_tokenizer *tknzer, int fd, char *file, int flags)
+int create_fd(char *path, int flags)
 {
-	int		fd_new;
+	int     fd_new;
 	char	*error;
 
-	fd_new = open(file, flags, 0644);
+	fd_new = open(path, flags, 0644);
 	if (fd_new == -1)
 	{
 		if (errno == ENOENT)
 		{
-			error = kl_strjoin_free(ft_strdup("no such file or directory: "),
-					ft_strdup(file));
+			error = kl_strjoin_free(
+				ft_strdup("no such file or directory: "),
+				ft_strdup(path)
+			);
 			ms_print(STDERR_FILENO, COLOR_RED, error);
 			free(error);
 		}
 		else
 			ms_print_cmd_error("open()", strerror(errno));
-		return (errno);
+		return (0);
 	}
-	if (tknzer->fd_edited[fd])
-		close(tknzer->cmd_now->fd[fd]);
-	tknzer->cmd_now->fd[fd] = fd_new;
-	tknzer->fd_edited[fd] = 1;
+	return (fd_new);
+}
+
+int	add_fd(t_cmd *s_cmd, int fd, char *path, int flags)
+{
+	int fd_new;
+
+	fd_new = create_fd(path, flags);
+	if (fd_new == 0)
+		return (errno);
+	if (s_cmd->fd[fd] != fd)
+		close(s_cmd->fd[fd]);
+	s_cmd->fd[fd] = fd_new;
 	return (0);
 }
 
-char	*get_filename(t_dlst *lexemes)
+char	*get_str_lexeme(t_dlst *lexemes)
 {
 	t_operator	lexeme_type;
 	char		*error;
@@ -53,8 +64,10 @@ char	*get_filename(t_dlst *lexemes)
 	lexeme_type = ((t_lexeme *)lexemes->content)->type;
 	if (lexeme_type == STR)
 		return (((t_lexeme *)lexemes->content)->str);
-	error = kl_strjoin_free(ft_strdup("syntax error near unexpected token "),
-			ft_strdup((char *)&lexeme_type));
+	error = ft_strjoin(
+		"syntax error near unexpected token ",
+		(char *)&lexeme_type
+	);
 	ms_print(STDERR_FILENO, COLOR_RED, error);
 	free(error);
 	return (NULL);

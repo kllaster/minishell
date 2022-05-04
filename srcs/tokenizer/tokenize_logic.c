@@ -69,13 +69,21 @@ int	tokenize__logic(t_dlst **tokens, t_dlst *lexemes, t_tokenizer *tknzer)
 		return (redirect(STDIN_FILENO, O_RDONLY, lexemes, tknzer));
 	else if (lexeme_type == R_REDIR)
 	{
-		return (redirect(STDOUT_FILENO,
-				O_CREAT | O_WRONLY | O_TRUNC, lexemes, tknzer));
+		if (redirect(STDOUT_FILENO,
+			O_CREAT | O_WRONLY | O_TRUNC, lexemes, tknzer) != -1)
+		{
+			return (1);
+		}
+		return set_redirect_back(O_RDONLY, lexemes, tknzer->cmd_now);
 	}
 	else if (lexeme_type == DR_REDIR)
 	{
-		return (redirect(STDOUT_FILENO,
-				O_CREAT | O_WRONLY | O_APPEND, lexemes, tknzer));
+		if (redirect(STDOUT_FILENO,
+			O_CREAT | O_WRONLY | O_APPEND, lexemes, tknzer) != -1)
+		{
+			return (1);
+		}
+		return set_redirect_back(O_RDONLY, lexemes, tknzer->cmd_now);
 	}
 	else if (lexeme_type == DL_REDIR)
 		return (tokenize__logic_heredoc(lexemes, tknzer));

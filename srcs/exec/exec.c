@@ -27,6 +27,8 @@ static int exec_cmd(t_cmd* s_cmd)
 	{
 		if (dup_fd(s_cmd->pipe_fd, STDIN_FILENO) != 0)
 			return (errno);
+		if (close(s_cmd->pipe_fd) == -1)
+			ms_print_cmd_error("close()", strerror(errno));
 	}
 	if (dup_fd(s_cmd->fd[STDOUT_FILENO], STDOUT_FILENO) != 0)
 		return (errno);
@@ -57,20 +59,8 @@ static int create_pipe_first(t_cmd* s_cmd)
 
 static int create_pipe_second(t_cmd* s_cmd)
 {
-	int fd[2];
-
-	if (s_cmd->is_piped && s_cmd->return_pipe_fd == 0
-	    && s_cmd->fd[STDOUT_FILENO] != STDOUT_FILENO)
-	{
-		if (pipe(fd) == -1)
-		{
-			ms_print_cmd_error("pipe()", strerror(errno));
-			return (errno);
-		}
-		s_cmd->return_pipe_fd = fd[STDIN_FILENO];
-		if (dup_fd(s_cmd->fd[STDOUT_FILENO], fd[STDOUT_FILENO]) != 0)
-			return (errno);
-	}
+	if (s_cmd->is_piped && s_cmd->fd_redir_stdin != 0)
+		s_cmd->return_pipe_fd = s_cmd->fd_redir_stdin;
 	return (0);
 }
 
@@ -93,15 +83,15 @@ static int exec_cmd_fork(t_cmd* s_cmd)
 
 	code = wait_process(pid);
 	set_shell_pid(0);
-	if (code == 0 && create_pipe_second(s_cmd) != 0)
-		return (errno);
+	if (code == 0)
+		create_pipe_second(s_cmd);
 	close_cmd_fd(s_cmd);
 	return (code);
 }
 
 static int call_cmd(t_cmd* s_cmd)
 {
-	int res;
+	int code;
 	int saved_fd[2];
 
 	if (check_cmd(s_cmd) == 1)
@@ -122,10 +112,10 @@ static int call_cmd(t_cmd* s_cmd)
 			saved_fd[1] = dup(1);
 			if (create_pipe_first(s_cmd) != 0)
 				return (errno);
-			res = exec_cmd(s_cmd);
-			set_shell_pcode(res);
-			if (res == 0 && create_pipe_second(s_cmd) != 0)
-				return (errno);
+			code = exec_cmd(s_cmd);
+			set_shell_pcode(code);
+			if (code == 0)
+				create_pipe_second(s_cmd);
 			close_cmd_fd(s_cmd);
 			if (dup_fd(saved_fd[0], STDIN_FILENO) != 0)
 				return (errno);
@@ -135,13 +125,13 @@ static int call_cmd(t_cmd* s_cmd)
 	}
 	else
 	{
-		res = exec_cmd_fork(s_cmd);
+		code = exec_cmd_fork(s_cmd);
 		if (!shell_pcode_is_signal())
-			set_shell_pcode(res);
+			set_shell_pcode(code);
 		else
 			set_shell_is_signal(0);
 	}
-	return (res);
+	return (code);
 }
 
 void run_cmds(t_dlst* tokens)

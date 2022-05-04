@@ -12,15 +12,7 @@ void	create_cmd(t_tokenizer *tknzer, t_dlst **tokens, char *str)
 		tknzer->cmd_now = kl_calloc(1, sizeof(t_cmd));
 		tknzer->cmd_now->fd[0] = STDIN_FILENO;
 		tknzer->cmd_now->fd[1] = STDOUT_FILENO;
-		tknzer->fd_edited[0] = 0;
-		tknzer->fd_edited[1] = 0;
 		tknzer->stop_parse_str = 0;
-		if (tknzer->pipe)
-		{
-			tknzer->fd_edited[STDIN_FILENO] = 1;
-			tknzer->cmd_now->fd[STDIN_FILENO] = tknzer->fd_pipe[STDIN_FILENO];
-			tknzer->pipe = 0;
-		}
 	}
 	if (str)
 	{
@@ -29,15 +21,26 @@ void	create_cmd(t_tokenizer *tknzer, t_dlst **tokens, char *str)
 	}
 }
 
+int	set_redirect_back(int flags, t_dlst *lexemes, t_cmd *s_cmd)
+{
+	char	*path;
+
+	path = get_str_lexeme(lexemes);
+	if (path == NULL)
+		return (1);
+	s_cmd->fd_redir_stdin = create_fd(path, flags);
+	return s_cmd->fd_redir_stdin == 0 ? 1 : -1;
+}
+
 int	redirect(int fd, int flags, t_dlst *lexemes, t_tokenizer *tknzer)
 {
-	char	*file;
+	char    *path;
 
 	tknzer->stop_parse_str = 1;
-	file = get_filename(lexemes);
-	if (file == NULL)
+	path = get_str_lexeme(lexemes);
+	if (path == NULL)
 		return (1);
-	if (add_fd(tknzer, fd, file, flags) != 0)
+	if (add_fd(tknzer->cmd_now, fd, path, flags) != 0)
 		return (2);
 	return (-1);
 }
@@ -46,7 +49,7 @@ int	heredoc(int fd, t_dlst *lexemes)
 {
 	char	*delimiter;
 
-	delimiter = get_filename(lexemes);
+	delimiter = get_str_lexeme(lexemes);
 	if (delimiter == NULL)
 		return (1);
 	multiline_put_in_file(ms_put_heredoc, delimiter, fd);
