@@ -1,0 +1,183 @@
+#include "minishell.h"
+
+#test result_lexer1
+{
+	t_dlst	*lexemes;
+	t_lexeme *lexeme;
+
+	lexemes = parse_lexemes("  echo  \"< Hello >\"        '<< World! >>'     ");
+
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, STR);
+	ck_assert_str_eq(lexeme->str, "echo");
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, STR);
+	ck_assert_str_eq(lexeme->str, "< Hello >");
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, STR);
+	ck_assert_str_eq(lexeme->str, "<< World! >>");
+
+	ck_assert_ptr_null(lexemes->prev);
+
+	dlst_loop(lexemes);
+	dlst_map(lexemes, free_lexeme);
+	dlst_free(lexemes);
+}
+
+#test result_lexer2
+{
+	t_dlst	*lexemes;
+	t_lexeme *lexeme;
+
+	lexemes = parse_lexemes(" cat  <   test_file      | cat  >>      test_file   ");
+
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, STR);
+	ck_assert_str_eq(lexeme->str, "cat");
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, L_REDIR);
+	ck_assert_ptr_null(lexeme->str);
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, STR);
+	ck_assert_str_eq(lexeme->str, "test_file");
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, PIPE);
+	ck_assert_ptr_null(lexeme->str);
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, STR);
+	ck_assert_str_eq(lexeme->str, "cat");
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, DR_REDIR);
+	ck_assert_ptr_null(lexeme->str);
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, STR);
+	ck_assert_str_eq(lexeme->str, "test_file");
+
+	ck_assert_ptr_null(lexemes->prev);
+
+	dlst_loop(lexemes);
+	dlst_map(lexemes, free_lexeme);
+	dlst_free(lexemes);
+}
+
+#test result_lexer3
+{
+	t_dlst	*lexemes;
+	t_lexeme *lexeme;
+
+	lexemes = parse_lexemes("echo 11111 > test_file | cat -e");
+
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, STR);
+	ck_assert_str_eq(lexeme->str, "echo");
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, STR);
+	ck_assert_str_eq(lexeme->str, "11111");
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, R_REDIR);
+	ck_assert_ptr_null(lexeme->str);
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, STR);
+	ck_assert_str_eq(lexeme->str, "test_file");
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, PIPE);
+	ck_assert_ptr_null(lexeme->str);
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, STR);
+	ck_assert_str_eq(lexeme->str, "cat");
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, STR);
+	ck_assert_str_eq(lexeme->str, "-e");
+
+	ck_assert_ptr_null(lexemes->prev);
+
+	dlst_loop(lexemes);
+	dlst_map(lexemes, free_lexeme);
+	dlst_free(lexemes);
+}
+
+#test result_lexer4
+{
+	t_dlst	*lexemes;
+	t_lexeme *lexeme;
+
+	lexemes = parse_lexemes("   cat Makefile    ; echo  '123' ; echo \"Test;\";");
+
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, STR);
+	ck_assert_str_eq(lexeme->str, "cat");
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, STR);
+	ck_assert_str_eq(lexeme->str, "Makefile");
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, SEMICOLON);
+	ck_assert_ptr_null(lexeme->str);
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, STR);
+	ck_assert_str_eq(lexeme->str, "echo");
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, STR);
+	ck_assert_str_eq(lexeme->str, "123");
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, SEMICOLON);
+	ck_assert_ptr_null(lexeme->str);
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, STR);
+	ck_assert_str_eq(lexeme->str, "echo");
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, STR);
+	ck_assert_str_eq(lexeme->str, "Test;");
+
+	lexemes = lexemes->prev;
+	lexeme = lexemes->content;
+	ck_assert_int_eq(lexeme->type, SEMICOLON);
+	ck_assert_ptr_null(lexeme->str);
+
+	ck_assert_ptr_null(lexemes->prev);
+
+	dlst_loop(lexemes);
+	dlst_map(lexemes, free_lexeme);
+	dlst_free(lexemes);
+}

@@ -15,8 +15,9 @@ PROTECT_FLAGS	= -fno-exceptions -fstack-protector-all
 COMMON_FLAGS	= -std=c99 -Wall -Wextra -Werror -Wfloat-equal -MMD -pipe
 CFLAGS			= $(COMMON_FLAGS) $(DEBUG_FLAGS) $(PROTECT_FLAGS)
 
-BIN_DIR			= ./
+BIN_DIR			=
 SRC_DIR			= srcs
+TESTS_DIR		= tests
 BUILD_DIR		= build
 INC_DIR			= include
 
@@ -27,8 +28,8 @@ LIBFT			= ${LIBFT_DIR}/bin/libft.a
 
 LIBS			= ${LIBFT} ${GNL}
 
-SRCS			=	srcs/main.c\
-					srcs/loop.c\
+MAIN_SRC        =	srcs/main.c
+SRCS			=	srcs/loop.c\
 					srcs/lexer/lexer.c\
 					srcs/lexer/var_lexeme.c\
 					srcs/lexer/sub_lexemes.c\
@@ -50,16 +51,26 @@ SRCS			=	srcs/main.c\
 					srcs/builtin/pwd.c\
 					srcs/builtin/unset.c\
 
-OBJS			= $(notdir $(SRCS))
-OBJS			:= $(subst $(SRC_DIR), $(BUILD_DIR), $(SRCS:%.c=%.o))
+MAIN_OBJ		= $(subst $(SRC_DIR), $(BUILD_DIR), $(MAIN_SRC:%.c=%.o))
+OBJS			= $(subst $(SRC_DIR), $(BUILD_DIR), $(SRCS:%.c=%.o))
 NAME			:= $(addprefix $(BIN_DIR), $(NAME))
 DEPS			= $(OBJS:.o=.d)
 VPATH			= $(SRC_DIR):$(INC_DIR):$(BUILD_DIR)
 
+TESTS = $(shell find $(TESTS_DIR) -name '*.check')
+TESTS_SRC_DIR = $(TESTS_DIR)/$(SRC_DIR)
+TESTS_BUILD_DIR = $(TESTS_DIR)/$(BUILD_DIR)
+TESTS_BIN_DIR = $(TESTS_DIR)/bin
+TESTS_BIN_PATH = $(TESTS_BIN_DIR)/test_
+
+TESTS_SRCS := $(subst $(TESTS_DIR), $(TESTS_SRC_DIR), $(TESTS:%.check=%.c))
+TESTS_OBJS := $(subst $(TESTS_SRC_DIR), $(TESTS_BUILD_DIR), $(TESTS_SRCS:%.c=%.o))
+TESTS_BINS := $(subst $(TESTS_BUILD_DIR)/, $(TESTS_BIN_PATH), $(TESTS_OBJS:%.o=%))
+
 all:			$(NAME)
 
-$(NAME):		$(OBJS) $(LIBFT) $(GNL)
-				$(CC) $(CFLAGS) -I $(INC_DIR) $(OBJS) $(LIBS) -o $(NAME)
+$(NAME):		$(MAIN_OBJ) $(OBJS) $(LIBFT) $(GNL)
+				$(CC) $(CFLAGS) -I $(INC_DIR) $(MAIN_OBJ) $(OBJS) $(LIBS) -o $(NAME)
 
 $(BUILD_DIR)/%.o:  $(SRC_DIR)/%.c
 				@if [ ! -d $(dir $@) ] ; then $(MKDIR) $(dir $@); fi
@@ -71,13 +82,38 @@ ${GNL}:
 ${LIBFT}:
 				${MAKE} -C ${LIBFT_DIR}
 
-clean:
+test:			$(TESTS_BINS) $(TESTS_SRCS) $(TESTS_OBJS)
+				./$<
+
+$(TESTS_SRC_DIR)/%.c: $(TESTS_DIR)/%.check
+				@if [ ! -d $(dir $@) ] ; then $(MKDIR) $(dir $@); fi
+				checkmk $< > $@
+
+$(TESTS_BUILD_DIR)/%.o: $(TESTS_SRC_DIR)/%.c
+				@if [ ! -d $(dir $@) ] ; then $(MKDIR) $(dir $@); fi
+				$(CC) $(CFLAGS) -I $(INC_DIR) -c $< -o $@
+
+$(TESTS_BIN_PATH)%:	$(TESTS_BUILD_DIR)/%.o $(OBJS)
+				@if [ ! -d $(dir $@) ] ; then $(MKDIR) $(dir $@); fi
+				$(CC) $(CFLAGS) -I $(INC_DIR) $(OBJS) $< $(LIBS) -lcheck -o $@
+
+test_clean:
+				$(RM) $(TESTS_SRCS)
+				$(RM) -rd $(TESTS_SRC_DIR)
+				$(RM) $(TESTS_OBJS)
+				$(RM) -rd $(TESTS_BUILD_DIR)
+
+test_fclean:	test_clean
+				$(RM) $(TESTS_BINS)
+				$(RM) -rd $(TESTS_BIN_DIR)
+
+clean:			test_clean
 				$(RM) $(OBJS)
 				$(RM) $(DEPS)
 				cd import/get_next_line && $(MAKE) clean
 				cd import/libft && $(MAKE) clean
 
-fclean:			clean
+fclean:			clean test_fclean
 				$(RM) -rd $(BUILD_DIR)
 				$(RM) $(NAME)
 

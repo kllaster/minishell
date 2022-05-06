@@ -6,13 +6,13 @@ on:
       - '**.c'
       - '**.h'
       - 'Makefile'
-    branches: [ master, parser, builtin ]
+    branches: [ master ]
   pull_request:
     paths:
       - '**.c'
       - '**.h'
       - 'Makefile'
-    branches: [ master, parser, builtin ]
+    branches: [ master ]
 
 jobs:
   make:
@@ -29,3 +29,7 @@ jobs:
         run: make re
       - name: fclean
         run: make fclean
+      - name: install libcheck
+        run: brew install check
+      - name: running unit tests
+        run: make test

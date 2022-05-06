@@ -55,6 +55,7 @@ dkms.conf
 .DS_Store
 .idea
 .vscode
-.heredoc
+/tests/srcs/
+/tests/bin/
 minishell
 TODO
