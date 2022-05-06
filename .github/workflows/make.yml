@@ -29,7 +29,10 @@ jobs:
         run: make re
       - name: fclean
         run: make fclean
+
       - name: install libcheck
         run: brew install check
       - name: running unit tests
         run: make test
+      - name: running unit tests with leak checking
+        run: make test_leaks

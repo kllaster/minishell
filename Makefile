@@ -85,6 +85,10 @@ ${LIBFT}:
 test:			$(TESTS_BINS) $(TESTS_SRCS) $(TESTS_OBJS)
 				./$<
 
+test_leaks:		$(TESTS_BINS) $(TESTS_SRCS) $(TESTS_OBJS)
+				./$<
+				CK_FORK=no leaks --atExit -- ./$<
+
 $(TESTS_SRC_DIR)/%.c: $(TESTS_DIR)/%.check
 				@if [ ! -d $(dir $@) ] ; then $(MKDIR) $(dir $@); fi
 				checkmk $< > $@
